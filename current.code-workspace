@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"name": "Backend",
+			"path": "backend"
+		},
+		{
+			"name": "Frontend",
+			"path": "client"
+		}
+	],
+	"settings": {
+		"folder-color.pathColors": [
+			{
+				"folderPath": "d:\\coding\\limudiHotz\\react\\Nightfall Merch - final project\\backend\\",
+				"badge": " ",
+				"color": "foldercolorizer.LightSalmon"
+			},
+			{
+				"folderPath": "d:\\coding\\limudiHotz\\react\\Nightfall Merch - final project\\client\\dashboard\\",
+				"color": "foldercolorizer.LightSalmon2"
+			},
+			{
+				"folderPath": "d:\\coding\\limudiHotz\\react\\Nightfall Merch - final project\\client\\public\\",
+				"color": "foldercolorizer.LimeGreen"
+			}
+		]
+	}
+}

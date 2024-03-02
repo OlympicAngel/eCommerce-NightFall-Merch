@@ -1,0 +1,19 @@
+body {
+  direction: rtl;
+  min-height: 100vh !important;
+}
+
+body.chakra-ui-light {
+  background-color: rgb(145, 142, 168);
+}
+
+svg {
+  display: inline;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
