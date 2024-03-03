@@ -7,11 +7,12 @@ import {
   QueryClient,
   QueryClientProvider,
 } from 'react-query'
+import theme from './theme.js'
 
 const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <ChakraProvider>
+  <ChakraProvider theme={theme}>
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <App />
