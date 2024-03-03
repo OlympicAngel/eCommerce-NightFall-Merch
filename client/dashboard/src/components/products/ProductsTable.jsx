@@ -1,9 +1,10 @@
+import { FaShekelSign } from "react-icons/fa";
 import { SiMicrosoftexcel } from "react-icons/si";
 import { AiFillPlusCircle, AiOutlineEdit } from "react-icons/ai";
 import { BsFillTrashFill } from "react-icons/bs";
 import { IoMdOptions } from "react-icons/io";
 import { BiChevronDown } from "react-icons/bi";
-import { TableContainer, Table, Menu, Thead, Tr, Th, Button, MenuButton, Tbody, Td, MenuItem, Tooltip, Heading, MenuList, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Image, Text, HStack, Container, Flex, Box, useToast, Skeleton } from "@chakra-ui/react"
+import { TableContainer, Table, Menu, Thead, Tr, Th, Button, MenuButton, Tbody, Td, MenuItem, Tooltip, Heading, MenuList, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Image, Text, HStack, Container, Flex, Box, useToast, Skeleton, Badge } from "@chakra-ui/react"
 import { useContext, useState } from "react";
 import Dialog from "../partial/Dialog";
 import ProductForm from "../forms/ProductForm";
@@ -13,17 +14,21 @@ import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { toastSuccess } from "../../utils/toast.helper";
 import HeaderCRUD from "../partial/HeaderCRUD";
+import CategoryBadge from "../categories/CategoryBadge";
+import useCategories from "../../hooks/useGetCategories";
 
 
 function ProductsTable({ products = [] }) {
     const { SERVER } = useContext(AuthContext)
     const API = SERVER + "products";
 
+    const categories = useCategories();
+
+
     //set actions options for products
     const [userAction, setUserAction] = useState({ action: null, product: null });
     //handlers for dialog logic
     const { isOpen, onOpen, onClose } = useDisclosure();
-
 
     //delete toast handler
     const toast = useToast();
@@ -93,7 +98,7 @@ function ProductsTable({ products = [] }) {
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {products.map(p => <ProductRow key={p._id || Math.random()} {...{ p, setUserAction, onOpen }} />)}
+                        {products.map(p => <ProductRow key={p._id || Math.random()} {...{ p, setUserAction, onOpen, categories }} />)}
                     </Tbody>
                 </Table>
             </TableContainer>
@@ -104,7 +109,11 @@ function ProductsTable({ products = [] }) {
     )
 }
 
-function ProductRow({ p, setUserAction, onOpen }) {
+function ProductRow({ p, setUserAction, onOpen, categories }) {
+    //load category from query - will auto update when change
+    const categoryFromQuery = categories?.data?.find(c => c._id == p.category._id)
+    console.log(categoryFromQuery.color)
+
     return <Tr>
         <Td display={["none", "none", "table-cell"]} pl={2} pr={2}>
             {p.image && <Image minW="10" w="100%" src={p.image.replace("/upload/", "/upload/w_50/")} alt={p.name} />}
@@ -117,10 +126,10 @@ function ProductRow({ p, setUserAction, onOpen }) {
             </Tooltip>
         </Td>
         <Td maxW={10} pl={2} pr={2}>
-            {p.price?.toLocaleString() || 0}
+            {p.price?.toLocaleString() || 0} ₪
         </Td>
         <Td display={["none", "table-cell"]} pl={0}>
-            --
+            <CategoryBadge category={categoryFromQuery} />
         </Td>
         <Td pr={2} pl={0}>
             <ProductMenu product={p} {...{ setUserAction, onOpen }}></ProductMenu>

@@ -14,6 +14,7 @@ import { toastError, toastSuccess } from "../../utils/toast.helper"
 import FilterButtons from "./Sorters&Filters/FilterButtons";
 import SortButtons from "./Sorters&Filters/SortButtons";
 import OrderFullview from "./OrderFullview";
+import HeaderCRUD from "../partial/HeaderCRUD";
 
 
 function OrdersList({ orders = [] }) {
@@ -53,12 +54,9 @@ function OrdersList({ orders = [] }) {
 
     return (
         <>
-            <Flex mb={"0.5em"} >
-                <Heading flex={1}>
-                    רשימת הזמנות:
-                </Heading>
+            <HeaderCRUD name={"הזמנות"} list={orders}>
                 <FilterButtons setCurrentOpt={setFilterOpt} currentOpt={filterOpt} options={filters} />
-            </Flex>
+            </HeaderCRUD>
             <InputGroup >
                 <InputRightElement pointerEvents='none'>
                     <BiSearchAlt2 />
