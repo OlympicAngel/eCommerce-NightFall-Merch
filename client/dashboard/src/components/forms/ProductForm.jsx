@@ -2,12 +2,14 @@ import { AiFillCloseCircle } from "react-icons/ai";
 import { Flex, Button, Container, Spacer, Text, HStack, Image, FormLabel, useToast, Textarea } from "@chakra-ui/react";
 import FormInput from "./components/FormInput";
 import { useContext, useRef, useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AuthContext } from "../../context/AuthProvider";
 import axios from "axios";
 import { toastError, toastSuccess } from "../../utils/toast.helper";
 import { Form, Formik } from "formik";
 import * as yup from "yup";
+import FormSelect from "./components/FormSelect";
+import useGetCategories from "../../hooks/useGetCategories";
 
 
 function ProductForm({ product = {}, method = "post", closeDialog, btnText = "הוסף" }) {
@@ -19,6 +21,8 @@ function ProductForm({ product = {}, method = "post", closeDialog, btnText = "ה
     const toast = useToast();
 
     const buttonColorConfig = { post: "green.200", put: "orange.300" }
+
+    const allCategories = useGetCategories();
 
     //send request & data handlers
     const queryClient = useQueryClient()
@@ -61,11 +65,11 @@ function ProductForm({ product = {}, method = "post", closeDialog, btnText = "ה
 
     return (
         <Formik
-            initialValues={{ name: product.name, price: product.price, description: product.description, image }}
+            initialValues={{ name: product.name, price: product.price, description: product.description, category: product.category?._id || "", image: image || "" }}
             validationSchema={yup.object({
                 name: yup.string().required("חייב להזין שם").min(2, "שם קצר מידי"),
                 price: yup.number().required("חייב להזין מחיר כלשהו").min(0, "מחיר לא יכול להיות שלילי"),
-
+                category: yup.string().required("חייב לבחור קטגוריה")
             })}
             onSubmit={(values, actions) => { mutation.mutate() }}>
             <Container as={Form} p="1em" ref={formRef}>
@@ -74,12 +78,16 @@ function ProductForm({ product = {}, method = "post", closeDialog, btnText = "ה
                     <FormInput placeholder={"מחיר"} type="number" name="price" isRequired={true} />
                 </Flex>
                 <FormInput placeholder={"תיאור"} as={Textarea} name="description" />
-                <FormInput id="imageInput" display={image && "none" || "block"} onChange={updateImageView}
-                    placeholder={"תמונה"} type="file" name="image" accept=".png, .jpeg, .jpg" />
-                {image && <FormLabel mt={-4} htmlFor="imageInput" cursor={"pointer"} textAlign="center" color="gray.400">
-                    <Image src={image} />
-                    <Text fontSize={"small"}>לחץ לשינוי</Text>
-                </FormLabel>}
+                <FormSelect placeholder={"קטגוריה"} name="category" isRequired={true} >
+                    {allCategories?.data?.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
+                </FormSelect>
+                <FormInput id="imageInput" display={image ? "none" : "block"} onChange={updateImageView}
+                    placeholder={"תמונה"} type="file" name="image" accept=".png, .jpeg, .jpg" value="" />
+                {image &&
+                    <FormLabel mt={-4} htmlFor="imageInput" cursor={"pointer"} textAlign="center" color="gray.400">
+                        <Image src={image} />
+                        <Text fontSize={"small"}>לחץ לשינוי</Text>
+                    </FormLabel>}
 
                 <Flex w={"100%"} mt={"16"}>
                     <Button disabled={isLoading} onClick={() => { closeDialog() }} >

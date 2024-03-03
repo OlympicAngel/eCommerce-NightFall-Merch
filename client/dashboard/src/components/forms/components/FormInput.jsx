@@ -45,7 +45,8 @@ function FormInput(props) {
     return <FormControl isRequired={isRequired} mb="1.5em" isInvalid={meta.error && meta.touched && gotInput}>
         <FormLabel>{title || placeholder}</FormLabel>
         <InputGroup >
-            <Input focusBorderColor={isValid ? validColor : "purple.500"} as={Field} {...props} pr="7" {...filed} lineHeight={"2em"} />
+            <Input focusBorderColor={isValid ? validColor : "purple.500"} as={Field} {...props} pr="7" {...filed}
+                onChange={(e) => { onChange && onChange(e); filed.onChange(e) }} lineHeight={"2em"} />
             <InputIcon {...{ icon, validColor }} />
         </InputGroup>
         <FormErrorMessage>
