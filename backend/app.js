@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: ["http://localhost:5173", "http://localhost:5174", 'http://10.100.102.81:5173'],
     optionsSuccessStatus: 200,
   })
 );
