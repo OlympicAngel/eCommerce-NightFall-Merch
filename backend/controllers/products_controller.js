@@ -46,7 +46,7 @@ module.exports = {
   //get single product
   getById: async (req, res) => {
     try {
-      const products = await ProductModel.findById(req.params.id).exec();
+      const products = await ProductModel.findById(req.params.id).populate({ path: "category" }).exec();
 
       return res.status(200).json({
         success: true,
@@ -102,6 +102,7 @@ module.exports = {
           description,
           price,
           image, //note: here image is without cloudinary - its just local path
+          category,
         });
 
 

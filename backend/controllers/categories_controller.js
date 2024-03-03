@@ -44,11 +44,11 @@ module.exports = {
     updateById: async (req, res) => {
       try {
         const id = req.params.id;
-        const { name } = req.body;
+        const { name, color } = req.body;
         if (!name || name.length < 2)
           throw new Error("שם הקטגוריה קצר מידי")
 
-        await Category.findByIdAndUpdate(id, { name });
+        await Category.findByIdAndUpdate(id, { name, color });
 
         return res.status(200).json({
           success: true,

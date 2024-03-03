@@ -1,4 +1,4 @@
-import { Button, Flex, HStack, Heading, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button, Flex, HStack, Heading, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useDisclosure, useToast } from "@chakra-ui/react"
 import ConvertToExcel from "../../utils/toExcel";
 import { SiMicrosoftexcel } from "react-icons/si";
 import { AiFillPlusCircle } from "react-icons/ai";
@@ -45,6 +45,7 @@ function CategoriesTable({ categories = [] }) {
                 <Thead>
                     <Tr>
                         <Th>שם קטגוריה</Th>
+                        <Th>צבע</Th>
                         <Th>פעולות</Th>
                     </Tr>
                 </Thead>
@@ -52,6 +53,7 @@ function CategoriesTable({ categories = [] }) {
                     {categories.map(c =>
                         <Tr key={c._id}>
                             <Td fontSize={"1.5em"}>{c.name}</Td>
+                            <Td><Box borderRadius="full" bg={c.color + ".500"} w={"1em"} aspectRatio={1}></Box></Td>
                             <Td>
                                 <Flex gap="1em">
                                     <Button colorScheme="green" onClick={() => { setCategory2edit(c); onOpen(); }}>עדכן</Button>

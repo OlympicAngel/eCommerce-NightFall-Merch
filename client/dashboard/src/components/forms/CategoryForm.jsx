@@ -1,3 +1,6 @@
+import { BiCaretDown } from "react-icons/bi";
+import { AiFillCaretDown } from "react-icons/ai";
+import { IoMdColorPalette } from "react-icons/io";
 import { Button, Container, Flex, HStack, Heading, Spacer, Text, useToast } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import FormInput from "./components/FormInput";
@@ -8,6 +11,7 @@ import { useContext, useRef } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 import { toastError, toastSuccess } from "../../utils/toast.helper";
 import { AiFillCloseCircle, AiFillPlusCircle, AiOutlineEdit } from "react-icons/ai";
+import FormSelect from "./components/FormSelect";
 
 function CategoryForm({ category, onClose, onSuccess }) {
     const method = category ? "put" : "post";
@@ -43,12 +47,23 @@ function CategoryForm({ category, onClose, onSuccess }) {
                 {btnConfig[method].tSimple} קטגוריה:
             </Heading>
             <Formik
-                initialValues={{ name: category?.name || "" }}
+                initialValues={{ name: category?.name || "", color: category?.color || "" }}
                 validationSchema={yup.object({ name: yup.string().required("חייב להזין שם").min(2, "שם קצר מידי"), })}
                 onSubmit={(values, actions) => { categoryCRUD.mutate(values) }}>
                 <Container as={Form} p="1em" ref={formRef}>
 
                     <FormInput placeholder={"שם הקטגוריה"} name="name" isRequired={true} min="2" />
+                    <FormSelect title="צבע הקטגוריה" placeholder={"בחר צבע"} icon={<><IoMdColorPalette /><BiCaretDown /></>} name="color" isRequired={true} min="2">
+                        <Text as={"option"} value="red" color={"red.500"}>אדום</Text>
+                        <Text as={"option"} value="orange" color={"orange.500"}>כתום</Text>
+                        <Text as={"option"} value="yellow" color={"yellow.500"}>צהוב</Text>
+                        <Text as={"option"} value="green" color={"green.500"}>ירוק</Text>
+                        <Text as={"option"} value="teal" color={"teal.500"}>ירקרק</Text>
+                        <Text as={"option"} value="blue" color={"blue.500"}>כחול</Text>
+                        <Text as={"option"} value="cyan" color={"cyan.500"}>תכלת</Text>
+                        <Text as={"option"} value="purple" color={"purple.500"}>סגול</Text>
+                        <Text as={"option"} value="pink" color={"pink.500"}>ורוד</Text>
+                    </FormSelect>
                     <Flex w={"100%"} mt={"5"}>
                         {onClose && <Button disabled={isLoading} onClick={() => { onClose() }} >
                             <HStack><AiFillCloseCircle /><Text>ביטול</Text></HStack>

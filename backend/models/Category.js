@@ -10,6 +10,11 @@ const category = new Schema({
         type: String,
         required: [true, "חובה לציין שם"],
         minlength: [2, "השם חייב להיות לפחות 2 תווים"]
+    },
+
+    color: {
+        type: String,
+        default: "purple"
     }
 })
 
