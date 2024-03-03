@@ -232,6 +232,7 @@ module.exports = {
           _id: manager._id,
           name: manager.name,
           email: manager.email,
+          permission: manager.permission
         },
       });
     } catch (error) {

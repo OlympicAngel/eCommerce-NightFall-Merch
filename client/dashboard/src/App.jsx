@@ -8,10 +8,13 @@ import {
   Outlet,
   Navigate
 } from "react-router-dom";
-import Nav from "./components/partial/Nav"
 import { Box, Container, Spinner } from "@chakra-ui/react";
 import { AuthContext } from "./context/AuthProvider";
 import useAuth from "./hooks/useAuth";
+//components
+const Nav = lazy(() => import("./components/partial/Nav"));
+const LoggedAdminFooter = lazy(() => import("./components/partial/LoggedAdminFooter"));
+//pages
 const Login = lazy(() => import("./pages/Login"));
 const Products = lazy(() => import("./pages/Products"));
 const Orders = lazy(() => import("./pages/Orders"));
@@ -21,20 +24,25 @@ const Categories = lazy(() => import("./pages/Categories"));
 
 function Root() {
   const { isLoading } = useAuth()
-  const { isAuth } = useContext(AuthContext)
+  const { manager, isAuth } = useContext(AuthContext)
 
   return <>
     <Box as="header" width={"100%"} textAlign={"center"}>
-      {isAuth && <Nav />}
+      {isAuth &&
+        <Nav />
+      }
     </Box>
-    <Container p={1} as="main" maxW='6xl' minH="100vh - 4em" borderRadius="1em" centerContent>
+    <Container p={1} as="main" maxW='6xl' minH="100vh - 4em"
+      fontSize={["xs", "sm", "md"]} borderRadius="1em" centerContent>
       {isLoading && <CustomSpinner />}
       <Suspense fallback={<CustomSpinner />} >
         {!isLoading && <Outlet />}
       </Suspense>
-
     </Container>
-    <Box as="footer"></Box>
+
+    {isAuth &&
+      <LoggedAdminFooter manager={manager}></LoggedAdminFooter>
+      || <Box></Box>}
   </>
 }
 

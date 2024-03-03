@@ -23,6 +23,22 @@
 			{
 				"folderPath": "d:\\coding\\limudiHotz\\react\\Nightfall Merch - final project\\client\\public\\",
 				"color": "foldercolorizer.LimeGreen"
+			},
+			{
+				"folderPath": "d:\\coding\\limudiHotz\\react\\eCommerce-NightFall-Merch\\backend\\",
+				"color": "foldercolorizer.LightRed"
+			},
+			{
+				"folderPath": "d:\\coding\\limudiHotz\\react\\eCommerce-NightFall-Merch\\client\\",
+				"color": "foldercolorizer.green"
+			},
+			{
+				"folderPath": "d:\\coding\\limudiHotz\\react\\eCommerce-NightFall-Merch\\client\\dashboard\\",
+				"color": "foldercolorizer.GreenYellow"
+			},
+			{
+				"folderPath": "d:\\coding\\limudiHotz\\react\\eCommerce-NightFall-Merch\\client\\public\\",
+				"color": "foldercolorizer.aquamarine"
 			}
 		]
 	}
