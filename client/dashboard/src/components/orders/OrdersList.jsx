@@ -1,10 +1,11 @@
+import { ImSad2 } from "react-icons/im";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 import { BiSearchAlt2 } from "react-icons/bi";
 import { FaInfoCircle } from "react-icons/fa";
 import { CgFileDocument } from "react-icons/cg";
 import { HiLocationMarker } from "react-icons/hi";
 import { FaShekelSign } from "react-icons/fa";
-import { Heading, Box, useToast, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, StatLabel, Stat, StatNumber, StatHelpText, Divider, Text, CardHeader, Flex, RadioGroup, Button, Stack, Radio, Badge, VStack, Tag, InputGroup, InputLeftAddon, Input, InputLeftElement, Spacer, InputRightElement } from "@chakra-ui/react"
+import { Heading, Box, useToast, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, StatLabel, Stat, StatNumber, StatHelpText, Divider, Text, CardHeader, Flex, RadioGroup, Button, Stack, Radio, Badge, VStack, Tag, InputGroup, InputLeftAddon, Input, InputLeftElement, Spacer, InputRightElement, HStack } from "@chakra-ui/react"
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 import OrderStatus from "./OrderStatus";
@@ -58,13 +59,17 @@ function OrdersList({ orders = [] }) {
                 <FilterButtons setCurrentOpt={setFilterOpt} currentOpt={filterOpt} options={filters} />
             </HeaderCRUD>
             <InputGroup >
-                <InputRightElement pointerEvents='none'>
-                    <BiSearchAlt2 />
-                </InputRightElement>
-                <Input p={"1em"} pr={"2.5em"} type='search' onChange={(e) => setSearchTerm(e.target.value.toLowerCase())} placeholder='חיפוש הזמנה לפי שם, לקוח, מחיר, תאריך וכו...' />
+                <HStack w={"inherit"}>
+                    <InputRightElement pointerEvents='none'>
+                        <BiSearchAlt2 />
+                    </InputRightElement>
+                    <Input p={"1em"} pr={"2.5em"} type='search' onChange={(e) => setSearchTerm(e.target.value.toLowerCase())} placeholder='חיפוש הזמנה לפי שם, לקוח, מחיר, תאריך וכו...' />
+                    <Text whiteSpace={"nowrap"}>{filteredOrders.length} מתוך {orders.length}</Text>
+                </HStack>
             </InputGroup>
             <SortButtons setCurrentOpt={setSorter} currentOpt={sorterOpt} options={sorters} setAccordionIndex={setAccordionIndex} />
-            {filteredOrders.length == 0 && <Box textAlign={"center"} as={"i"} color="gray.500"> ~ אין תוצאות - יש לשנות את סגנון הסינון ~</Box>}
+            {orders.length == 0 && <Box textAlign={"center"} as={"i"} color="gray.500"> ~ אין כרגע הזמנות <ImSad2 /> ~</Box>}
+            {filteredOrders.length == 0 && orders.length > 0 && <Box textAlign={"center"} as={"i"} color="gray.500"> ~ אין תוצאות - יש לשנות את סגנון הסינון ~</Box>}
             <Accordion w="100%" allowMultiple index={accordionIndex}>
                 {filteredOrders.map((order, index) => <OrderRow id={index} key={order._id} {...{ order, index, addAccordionIndex, setFullview }} />)}
             </Accordion>
