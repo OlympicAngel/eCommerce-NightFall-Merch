@@ -1,3 +1,4 @@
+import { HiUsers } from "react-icons/hi";
 import { TbTableOptions } from "react-icons/tb";
 import { BsCardChecklist } from "react-icons/bs";
 import { TbLogout } from "react-icons/tb";
@@ -44,10 +45,11 @@ export default function Nav() {
         }, false)
     }, [])
 
+
     return (<>
         <Box onClick={closeMenu} display={["block", "none"]} position={"absolute"} inset="0" zIndex={1} backdropFilter={"blur(0.2em)"}
-            opacity={isOpen ? 1 : 0} pointerEvents={isOpen ? "all" : "none"} transition={"opacity 0.3s"} cursor={"no-drop"}
-            _after={{ content: '""', inset: 0, bg: "purple.900", position: "absolute", opacity: 0.5 }} ></Box>
+            opacity={isOpen ? 1 : 0} pointerEvents={isOpen ? "all" : "none"} transition={"opacity 0.3s"} transitionDelay={(~~!isOpen) * 0.15 + "s"}
+            cursor={"no-drop"} _after={{ content: '""', inset: 0, bg: "purple.900", position: "absolute", opacity: 0.5 }} ></Box>
 
         <NavContainer isOpen={isOpen} zIndex={2} fontSize={["2xl", "xs", "lg", "xl"]}>
             <MobileMenuIcon {...{ toggleColorMode, colorMode, toggleMenu, isOpen }} />
@@ -56,18 +58,21 @@ export default function Nav() {
                 display={"flex"}
                 gap={[0, "3vmin"]}
                 flexDirection={["column", "row"]}
-                align="center"
+                alignItems={["stretch", "center"]}
                 overflow={"hidden"}
-                maxHeight={isOpen ? [menuH || "initial", "initial"] : [0, "initial"]} pointerEvents={isOpen ? ["all", "all"] : ["none", "all"]} transition={"max-height 0.3s"}
+                mt={["0.5em", 0]}
+                maxHeight={isOpen ? [menuH || "initial", "initial"] : [0, "initial"]} pointerEvents={isOpen ? ["all", "all"] : ["none", "all"]}
+                transition={"max-height 0.3s"} transitionDelay={(~~!isOpen) * 0.15 + "s"}
             >
 
-                <MenuItem to="/" icon={<AiFillHome />} closeMenu={closeMenu}> ראשי</MenuItem>
-                <MenuItem to="/orders" icon={<BsCardChecklist />} closeMenu={closeMenu}>  הזמנות</MenuItem>
-                <MenuItem to="/products" icon={<AiFillShop />} closeMenu={closeMenu}> מוצרים</MenuItem>
-                <MenuItem to="/categories" icon={<TbTableOptions />} closeMenu={closeMenu}> קטגוריות</MenuItem>
+                <MenuItem to="/" icon={<AiFillHome />} {...{ closeMenu }}> ראשי</MenuItem>
+                <MenuItem to="/orders" icon={<BsCardChecklist />} {...{ closeMenu }}>  הזמנות</MenuItem>
+                <MenuItem to="/products" icon={<AiFillShop />} {...{ closeMenu }}> מוצרים</MenuItem>
+                <MenuItem to="/categories" icon={<TbTableOptions />} {...{ closeMenu }}> קטגוריות</MenuItem>
+                <MenuItem to="/users" icon={<HiUsers />} {...{ closeMenu }}> משתמשים</MenuItem>
 
                 <Spacer display={["none", "block"]} minH={"1em"} />
-                <Flex gap={"0.5em"} mt={["1em", 0]}>
+                <Flex gap={"0.5em"} mt={["1em", 0]} justifyContent={"left"}>
                     <Button display={["none", "block"]} onClick={toggleColorMode} variant="outline" colorScheme="black">
                         {colorMode == "dark" ? <BsFillSunFill /> : <BsFillMoonStarsFill />}
                     </Button>
@@ -76,7 +81,7 @@ export default function Nav() {
                     </Button>
                 </Flex>
             </Flex>
-        </NavContainer>
+        </NavContainer >
     </>
     )
 }
@@ -113,7 +118,14 @@ function MobileMenuIcon({ isOpen, toggleMenu, toggleColorMode, colorMode }) {
 }
 
 function MenuItem({ children, to, icon, closeMenu }) {
-    return <Link as={NavLink} to={to} onClick={closeMenu}>
+
+    const active = {
+        background: "rgba(0,0,0,0.8)"
+    };
+
+    return <Link style={({ isActive }) => isActive ? active : {}}
+        borderRadius={"0.5em"} transition={"0.3s background: "}
+        as={NavLink} to={to} onClick={closeMenu} p="0 0.5em">
         <HStack>
             {icon}
             <Text>
@@ -124,7 +136,7 @@ function MenuItem({ children, to, icon, closeMenu }) {
 }
 
 import * as React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import useLogout from "../../hooks/useLogout";
 import { useState } from "react";
 import { useRef } from "react";
