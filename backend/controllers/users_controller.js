@@ -237,12 +237,10 @@ module.exports = {
     //get all users
     getAll: async (req, res) => {
       try {
-        /*       const users = await UserModel.find().populate([
-                "cart",
-                "orders.order",
-              ]); */
-
-        const users = await UserModel.find();
+        const users = await UserModel.find().populate([
+          //"cart",
+          "orders.order",
+        ]);
 
         return res.status(200).json({
           success: true,

@@ -1,5 +1,3 @@
-import { FaShekelSign } from "react-icons/fa";
-import { SiMicrosoftexcel } from "react-icons/si";
 import { AiFillPlusCircle, AiOutlineEdit } from "react-icons/ai";
 import { BsFillTrashFill } from "react-icons/bs";
 import { IoMdOptions } from "react-icons/io";
@@ -9,13 +7,15 @@ import { useContext, useState } from "react";
 import Dialog from "../partial/Dialog";
 import ProductForm from "../forms/ProductForm";
 import { AuthContext } from "../../context/AuthProvider";
-import convertToExcel from "../../utils/toExcel"
 import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { toastSuccess } from "../../utils/toast.helper";
 import HeaderCRUD from "../partial/HeaderCRUD";
 import CategoryBadge from "../categories/CategoryBadge";
 import useCategories from "../../hooks/useGetCategories";
+import FilterButtons, { FilterBtn } from "../Sorters&Filters/FilterButtons";
+import SortButtons, { SortBtn } from "../Sorters&Filters/SortButtons";
+import SearchList, { useSearchLogic } from "../Sorters&Filters/SearchList";
 
 
 function ProductsTable({ products = [] }) {
@@ -79,13 +79,26 @@ function ProductsTable({ products = [] }) {
             break;
     }
 
+    const filters = genFilterOptions(categories.data);
+    const filterLogic = FilterBtn.useFilterBtnLogic(filters)
+
+    const sorters = genSortOptions();
+    const sortLogic = SortBtn.useSortLogic(sorters)
+
+    const searchLogic = useSearchLogic({ "onlyStartWith": false });
+
+    let productShowList = products.filter(filterLogic.filterFn).filter(searchLogic.filterFn).sort(sortLogic.sortFn)
     return (
         <>
             <TableContainer w="100%">
-                <HeaderCRUD name="מוצרים" list={products} onAdd={() => {
+                <HeaderCRUD name="מוצרים" list={productShowList} onAdd={() => {
                     setUserAction({ action: "add" });
                     onOpen()
-                }} />
+                }}>
+                    <FilterButtons filterLogic={filterLogic} />
+                </HeaderCRUD>
+                <SearchList list={products} filteredList={productShowList} searchLogic={searchLogic} placeholder="חיפוש מוצר לפי שם, מחיר, קטגוריה, מזהה וכו'.. " />
+                <SortButtons sortLogic={sortLogic} />
 
                 <Table variant='simple' colorScheme='purple' w="100%">
                     <Thead>
@@ -98,7 +111,7 @@ function ProductsTable({ products = [] }) {
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {products.map(p => <ProductRow key={p._id || Math.random()} {...{ p, setUserAction, onOpen, categories }} />)}
+                        {productShowList.map(p => <ProductRow key={p._id || Math.random()} {...{ p, setUserAction, onOpen, categories }} />)}
                     </Tbody>
                 </Table>
             </TableContainer>
@@ -112,7 +125,6 @@ function ProductsTable({ products = [] }) {
 function ProductRow({ p, setUserAction, onOpen, categories }) {
     //load category from query - will auto update when change
     const categoryFromQuery = categories?.data?.find(c => c._id == p.category._id)
-    console.log(categoryFromQuery.color)
 
     return <Tr>
         <Td display={["none", "none", "table-cell"]} pl={2} pr={2}>
@@ -161,6 +173,21 @@ function ProductMenu({ product, setUserAction, onOpen }) {
             </MenuItem>
         </MenuList>
     </Menu>
+}
+
+function genFilterOptions(categories = []) {
+    const filters = [new FilterBtn("הכל", (p) => p, "orange")];
+    categories.forEach(c => filters.push(new FilterBtn(c.name, (p) => p.category._id == c._id, c.color)))
+    return filters;
+}
+
+function genSortOptions() {
+    return [
+        new SortBtn("תאריך יצירה", () => 1),
+        new SortBtn("מחיר", (p1, p2) => p1.price < p2.price ? 1 : -1),
+        new SortBtn("קטגוריה", (p1, p2) => p1.category.name < p2.category.name ? -1 : 1),
+        new SortBtn("שם", (p1, p2) => p1.name < p2.name ? -1 : 1)
+    ]
 }
 
 export default ProductsTable

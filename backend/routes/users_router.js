@@ -14,13 +14,13 @@ router.post('/managers/login', managers.login);
 router.get('/managers/logout', auth_manager, managers.logout);
 router.get('/managers/auth', auth_manager, managers.authManagerToken);
 //managers actions
-router.get('manage/', auth_manager, users.manage.getAll);
-router.get('manage/:id', auth_manager, users.manage.getById);
-router.delete('manage/:id', auth_admin, users.manage.deleteById);
-router.put('manage/:id', auth_manager, users.manage.updateById);
+router.get('/manage', auth_manager, users.manage.getAll);
+router.get('/manage/:id', auth_manager, users.manage.getById);
+router.put('/manage/:id', auth_manager, users.manage.updateById);
 
 //admins actions
 router.post('/admins/add-manager', auth_admin, managers.addManagerForAdmins);
+router.delete('/manage/:id', auth_admin, users.manage.deleteById);
 
 //users login
 router.post("/", users.create);

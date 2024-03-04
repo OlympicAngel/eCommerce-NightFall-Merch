@@ -12,10 +12,11 @@ import OrderStatus from "./OrderStatus";
 import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { toastError, toastSuccess } from "../../utils/toast.helper"
-import FilterButtons from "./Sorters&Filters/FilterButtons";
-import SortButtons from "./Sorters&Filters/SortButtons";
+import FilterButtons, { FilterBtn } from "../Sorters&Filters/FilterButtons";
+import SortButtons, { SortBtn } from "../Sorters&Filters/SortButtons";
 import OrderFullview from "./OrderFullview";
 import HeaderCRUD from "../partial/HeaderCRUD";
+import Search, { useSearchLogic } from "../Sorters&Filters/SearchList";
 
 
 function OrdersList({ orders = [] }) {
@@ -33,41 +34,28 @@ function OrdersList({ orders = [] }) {
     let filteredOrders = orders.map(o => { o.created_at_parsed = new Date(o.created_at)?.toLocaleString("he-il", { "dateStyle": "short" }); return o; });
 
     //filter by type
-    const [filterOpt, setFilterOpt] = useState(0)
-    const filters = filterOptions()
-    const filter = filters[filterOpt];
-    filteredOrders = filteredOrders.filter(filter.fn);
+    const filters = genFilterOptions()//gen filter option list
+    const filterLogic = FilterBtn.useFilterBtnLogic(filters) //use hook with <FilterButtons> comp
 
     //filter by user search
-    const [searchTerm, setSearchTerm] = useState("")
-    filteredOrders = filteredOrders.filter(order => deepSearch(order, searchTerm))
+    const searchLogic = useSearchLogic()
 
-    //sorty by (down/up by +/- sign)
-    const [sorterOpt, setSorterOpt] = useState(1)
-    //set sorting option OR if its the same sorting opt - change -/+ sign
-    const setSorter = (val) => { val == sorterOpt ? setSorterOpt(val * -1) : setSorterOpt(val) }
-    const sorters = sortOptions()
-    const sorter = sorters[Math.abs(sorterOpt) - 1];
-    filteredOrders = filteredOrders.sort((a, b) => sorter.fn(a, b, Math.sign(sorterOpt)))
+    //sort by
+    const sorters = genSortOptions() //gen sort option list
+    const sortLogic = SortBtn.useSortLogic(sorters)//use hook with <SortButtons> comp
+
+    filteredOrders = filteredOrders.filter(filterLogic.filterFn).filter(searchLogic.filterFn).sort(sortLogic.sortFn)
 
 
     const [fullview, setFullview] = useState();
 
     return (
         <>
-            <HeaderCRUD name={"הזמנות"} list={orders}>
-                <FilterButtons setCurrentOpt={setFilterOpt} currentOpt={filterOpt} options={filters} />
+            <HeaderCRUD name={"הזמנות"} list={filteredOrders}>
+                <FilterButtons filterLogic={filterLogic} />
             </HeaderCRUD>
-            <InputGroup >
-                <HStack w={"inherit"}>
-                    <InputRightElement pointerEvents='none'>
-                        <BiSearchAlt2 />
-                    </InputRightElement>
-                    <Input p={"1em"} pr={"2.5em"} type='search' onChange={(e) => setSearchTerm(e.target.value.toLowerCase())} placeholder='חיפוש הזמנה לפי שם, לקוח, מחיר, תאריך וכו...' />
-                    <Text whiteSpace={"nowrap"}>{filteredOrders.length} מתוך {orders.length}</Text>
-                </HStack>
-            </InputGroup>
-            <SortButtons setCurrentOpt={setSorter} currentOpt={sorterOpt} options={sorters} setAccordionIndex={setAccordionIndex} />
+            <Search list={orders} filteredList={filteredOrders} searchLogic={searchLogic} placeholder='חיפוש הזמנה לפי שם, לקוח, מחיר, תאריך וכו...' />
+            <SortButtons sortLogic={sortLogic} onChange={() => { setAccordionIndex([]) }} />
             {orders.length == 0 && <Box textAlign={"center"} as={"i"} color="gray.500"> ~ אין כרגע הזמנות <ImSad2 /> ~</Box>}
             {filteredOrders.length == 0 && orders.length > 0 && <Box textAlign={"center"} as={"i"} color="gray.500"> ~ אין תוצאות - יש לשנות את סגנון הסינון ~</Box>}
             <Accordion w="100%" allowMultiple index={accordionIndex}>
@@ -167,37 +155,26 @@ function OrderInfoBlock({ icon, children }) {
 
 //utils functions:
 
-//recursive deep search function to search at all order data
-function deepSearch(obj, match) {
-    return Object.values(obj).find(val => {
-        if (typeof val === "object")
-            return deepSearch(val, match)
-        val = val?.toString().toLowerCase();
-        const isMatch = val?.startsWith(match);
-        return isMatch
-    })
-}
-
 //array of filter objects used to create buttons & run functions of filtration
-function filterOptions() {
+function genFilterOptions() {
     return [
-        { title: "הכל", fn: (order) => order, color: "orange" },
-        { title: "חדש", fn: (order) => order.status == 1 },
-        { title: "במשלוח", fn: (order) => order.status == 2 },
-        { title: "בוצע", fn: (order) => order.status == 3 },
-        { title: "בוטל", fn: (order) => order.status == 4 },
+        new FilterBtn("הכל", (order) => order, "orange"),
+        new FilterBtn("חדש", (order) => order.status == 1),
+        new FilterBtn("במשלוח", (order) => order.status == 2),
+        new FilterBtn("בוצע", (order) => order.status == 3),
+        new FilterBtn("בוטל", (order) => order.status == 4)
     ]
 }
 
 //array of sorters objects used to create buttons & run functions of sort
-function sortOptions() {
+function genSortOptions() {
     return [
-        { title: "תאריך", fn: (o1, o2, sign) => sign * (new Date(o1.created_at) < new Date(o2.created_at) ? 1 : -1) },
-        { title: "מחיר", fn: (o1, o2, sign) => sign * (o1.total_price < o2.total_price ? 1 : -1) },
-        { title: "שם", fn: (o1, o2, sign) => sign * (o1.customer_details.customer_name < o2.customer_details.customer_name ? 1 : -1) },
-        { title: "כתובת", fn: (o1, o2, sign) => sign * (o1.customer_details.customer_address.city < o2.customer_details.customer_address.city ? 1 : -1) },
-        { title: "סטטוס", fn: (o1, o2, sign) => sign * (o1.status < o2.status ? 1 : -1) },
-        { title: "מזהה", fn: (o1, o2, sign) => sign * (o1._id < o2._id ? 1 : -1) },
+        new SortBtn("תאריך", (o1, o2) => new Date(o1.created_at) < new Date(o2.created_at) ? 1 : -1),
+        new SortBtn("מחיר", (o1, o2) => o1.total_price < o2.total_price ? 1 : -1),
+        new SortBtn("שם", (o1, o2) => o1.customer_details.customer_name < o2.customer_details.customer_name ? 1 : -1),
+        new SortBtn("כתובת", (o1, o2) => o1.customer_details.customer_address.city < o2.customer_details.customer_address.city ? 1 : -1),
+        new SortBtn("סטטוס", (o1, o2) => o1.status < o2.status ? 1 : -1),
+        new SortBtn("מזהה", (o1, o2) => o1._id < o2._id ? 1 : -1)
     ]
 }
 
