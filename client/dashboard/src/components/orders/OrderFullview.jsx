@@ -60,14 +60,14 @@ function OrderFullview({ order, setFullview }) {
                         <Tbody>
                             {order.products.map(p => <Tr key={p._id}>
                                 <Td>{p.product?.name || "-הוסר-"}</Td>
-                                <Td isNumeric>{p.RTP.toLocaleString()}</Td>
+                                <Td isNumeric>₪{p.RTP.toLocaleString()}</Td>
                                 <Td isNumeric>x{p.quantity.toLocaleString()}</Td>
-                                <Td isNumeric>{(p.quantity * p.RTP).toLocaleString()}</Td>
+                                <Td isNumeric>₪{(p.quantity * p.RTP).toLocaleString()}</Td>
                             </Tr>)}
                         </Tbody>
                     </Table>
                     <Box fontWeight={700} mt={2} me={5} fontSize={"lg"} textAlign={"end"}>
-                        סכום הזמנה: {order.products.reduce((a, p) => a + p.quantity * p.RTP, 0).toLocaleString()}
+                        סכום הזמנה: ₪{order.products.reduce((a, p) => a + p.quantity * p.RTP, 0).toLocaleString()}
                     </Box>
                 </TableContainer>
             </Box>

@@ -16,7 +16,8 @@ const User = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        minlength: [4, "סיסמה חייבת להיות לפחות 4 תווים"],
     },
     phone: {
         type: String,
@@ -25,15 +26,18 @@ const User = new Schema({
     address: {
         city: {
             type: String,
-            trim: true
+            trim: true,
+            required: true
         },
         street: {
             type: String,
-            trim: true
+            trim: true,
+            required: true
         },
         building: {
             type: String,
-            trim: true
+            trim: true,
+            required: true
         },
         apartment: {
             type: String,

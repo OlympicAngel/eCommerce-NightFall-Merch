@@ -242,6 +242,11 @@ module.exports = {
           "orders.order",
         ]);
 
+        users.forEach(u => {
+          u.password = undefined;
+          u.tokens = undefined;
+        })
+
         return res.status(200).json({
           success: true,
           message: `success to find all Users - for manager`,

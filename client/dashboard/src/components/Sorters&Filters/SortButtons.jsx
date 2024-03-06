@@ -3,23 +3,23 @@ import { useState } from "react";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 
 //shows sort by buttons
-function SortButtons({ sortLogic, onChange }) {
+function SortButtons({ sortLogic, onChange, colorScheme = "purple" }) {
 
     if (!sortLogic)
         throw new Error("missing sortLogic hook handler. use: SortBtn.useSortLogic(...)")
 
     const { sortList, currSorter, setCurrSorter } = sortLogic
 
-    return <Stack direction='row' m={"1em"}>
+    return <Stack direction='row' m={"1em"} wrap={"wrap"} justifyContent={"space-between"} alignItems={"center"}>
         <Text h={"min-content"}>מיון:</Text>
         {sortList.map((o, index) => {
             const isChecked = index + 1 == Math.abs(currSorter);
             return <Badge key={index} onClick={() => { setCurrSorter(index + 1); onChange && onChange() }}
-                userSelect={"none"}
-                cursor={"pointer"}
+                userSelect={"none"} textAlign={"center"}
+                cursor={"pointer"} flex="1 1 10em"
                 variant={isChecked ? "solid" : 'outline'}
                 _hover={{ bg: "gray.400", color: "purple.900" }}
-                colorScheme={o.color || 'purple'}
+                colorScheme={o.color || colorScheme}
                 p={"0.5em"} h={"min-content"} verticalAlign={"center"}>
                 {isChecked && (Math.sign(currSorter) == 1 ? <AiFillCaretDown /> : <AiFillCaretUp />)}{o.title}
             </Badge>

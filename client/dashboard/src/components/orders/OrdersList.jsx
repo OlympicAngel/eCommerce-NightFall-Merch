@@ -91,9 +91,8 @@ function OrderRow({ order, index, addAccordionIndex, setFullview }) {
                     <Tag colorScheme={["orange", "blue", "green", "red"][order.status - 1]}>
                         {["חדש", "משלוח", "בוצעה", "בוטל"][order.status - 1]}
                     </Tag> לקוח: {customer.customer_name}, טלפון: {customer.customer_phone}</Box>
-                <Box>
+                <Box>₪
                     {order.total_price.toLocaleString("he-il")}
-                    <FaShekelSign size={"0.5em"} />
                 </Box>
                 <AccordionIcon />
             </AccordionButton>
@@ -128,8 +127,7 @@ function OrderInfo({ order }) {
 
         <OrderInfoBlock icon={<FaInfoCircle size="1.5em" />}>
             <strong>סיכום הזמנה:</strong>
-            <Text> סה"כ - {order.total_price.toLocaleString("he-il")}
-                <FaShekelSign size={"0.5em"} />.
+            <Text> סה"כ - ₪{order.total_price.toLocaleString("he-il")}.
             </Text>
 
             <Box>פריטים: {order.products.map((p, i) => <ProductListing key={i} p={p} />)}
@@ -140,7 +138,7 @@ function OrderInfo({ order }) {
 
 //product list item used by <OrderInfo></OrderInfo>
 function ProductListing({ p }) {
-    return <Text as={"i"} display={"block"} key={p._id}>{p.quantity} יח' {p.product?.name || "-הוסר-"} ב {p.RTP}<FaShekelSign size={"0.5em"} /></Text>
+    return <Text as={"i"} display={"block"} key={p._id}>{p.quantity} יח' {p.product?.name || "-הוסר-"} ב ₪{p.RTP}</Text>
 }
 
 //semantic container of info 

@@ -19,6 +19,8 @@ const Login = lazy(() => import("./pages/Login"));
 const Products = lazy(() => import("./pages/Products"));
 const Orders = lazy(() => import("./pages/Orders"));
 const Categories = lazy(() => import("./pages/Categories"));
+const Users = lazy(() => import("./pages/Users"));
+
 
 
 
@@ -32,7 +34,7 @@ function Root() {
         <Nav />
       }
     </Box>
-    <Container p={1} as="main" maxW='6xl' minH="100vh - 4em"
+    <Container p={1} as="main" maxW='8xl' minH="100vh - 4em"
       fontSize={["xs", "sm", "md"]} borderRadius="1em" centerContent>
       {isLoading && <CustomSpinner />}
       <Suspense fallback={<CustomSpinner />} >
@@ -62,6 +64,7 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/categories" element={<Categories />} />
+        <Route path="/users" element={<Users />} />
       </Route>
     </Route>
   ))

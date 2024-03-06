@@ -1,5 +1,4 @@
 import { BiCaretDown } from "react-icons/bi";
-import { AiFillCaretDown } from "react-icons/ai";
 import { IoMdColorPalette } from "react-icons/io";
 import { Button, Container, Flex, HStack, Heading, Spacer, Text, useToast } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
@@ -7,21 +6,24 @@ import FormInput from "./components/FormInput";
 import * as yup from 'yup';
 import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 import { toastError, toastSuccess } from "../../utils/toast.helper";
 import { AiFillCloseCircle, AiFillPlusCircle, AiOutlineEdit } from "react-icons/ai";
 import FormSelect from "./components/FormSelect";
+import { emailValidation, passwordValidation, passwordValidationOption } from "../../utils/yup.helper";
 
-function CategoryForm({ category, onClose, onSuccess }) {
-    const method = category ? "put" : "post";
+function ManagerForm({ manager, onClose }) {
+    const loggedManager = useContext(AuthContext).manager
+    const isUpdatingSelf = manager && loggedManager._id != manager._id;
+    const method = manager ? "put" : "post";
 
     const toast = useToast()
     const { SERVER } = useContext(AuthContext)
     const queryClient = useQueryClient()
-    const categoryCRUD = useMutation({
+    const managerCRUD = useMutation({
         mutationFn: async (data) => axios({
-            "url": `${SERVER}categories/${category ? category._id : ""}`,
+            "url": `${SERVER}users/managers/${isUpdatingSelf ? manager._id : ""}`,
             method,
             "data": data,
             "withCredentials": true
@@ -29,12 +31,11 @@ function CategoryForm({ category, onClose, onSuccess }) {
         onError: (e) => toastError(e, toast),
         onSuccess: (res) => {
             toastSuccess(res.data.message, toast);
-            queryClient.invalidateQueries("getCategories")
+            queryClient.invalidateQueries("getManagers")
             onClose();
         }
     })
-    const { isLoading } = categoryCRUD;
-
+    const { isLoading } = managerCRUD;
     const formRef = useRef();
     const btnConfig = {
         "post": { c: "lime.500", t: <HStack><AiFillPlusCircle /><Text>הוסף!</Text></HStack>, tSimple: "הוסף" },
@@ -43,32 +44,24 @@ function CategoryForm({ category, onClose, onSuccess }) {
 
     return (
         <>
-            <Heading>
-                {btnConfig[method].tSimple} קטגוריה:
-            </Heading>
+            <Heading>{btnConfig[method].tSimple} מנהל:</Heading>
             <Formik
-                initialValues={{ name: category?.name || "", color: category?.color || "" }}
-                validationSchema={yup.object({ name: yup.string().required("חייב להזין שם").min(2, "שם קצר מידי"), })}
-                onSubmit={(values, actions) => { categoryCRUD.mutate(values) }}>
+                initialValues={{ name: manager?.name || "", email: manager?.email || "", password: "", confirmPassword: "" }}
+                validationSchema={yup.object({
+                    name: yup.string().required("חייב להזין שם").min(2, "שם קצר מידי"),
+                    email: emailValidation,
+                    password: manager ? passwordValidationOption : passwordValidation
+                })}
+                onSubmit={(values, actions) => { managerCRUD.mutate(values) }}>
                 <Container as={Form} p="1em" ref={formRef}>
+                    <FormInput placeholder={"שם פרטי"} name="name" isRequired={true} min="2" />
+                    <FormInput placeholder={"אמייל"} name="email" type="email" autoComplete="email" isRequired={true} />
+                    <FormInput placeholder={"סיסמה"} name="password" type="password" min="4" />
 
-                    <FormInput placeholder={"שם הקטגוריה"} name="name" isRequired={true} min="2" />
-                    <FormSelect title="צבע הקטגוריה" placeholder={"בחר צבע"} icon={<><IoMdColorPalette /><BiCaretDown /></>} name="color" isRequired={true} min="2">
-                        <Text as={"option"} value="red" color={"red.500"}>אדום</Text>
-                        <Text as={"option"} value="orange" color={"orange.500"}>כתום</Text>
-                        <Text as={"option"} value="yellow" color={"yellow.500"}>צהוב</Text>
-                        <Text as={"option"} value="green" color={"green.500"}>ירוק</Text>
-                        <Text as={"option"} value="teal" color={"teal.500"}>ירקרק</Text>
-                        <Text as={"option"} value="blue" color={"blue.500"}>כחול</Text>
-                        <Text as={"option"} value="cyan" color={"cyan.500"}>תכלת</Text>
-                        <Text as={"option"} value="purple" color={"purple.500"}>סגול</Text>
-                        <Text as={"option"} value="pink" color={"pink.500"}>ורוד</Text>
-                    </FormSelect>
                     <Flex w={"100%"} mt={"5"}>
                         {onClose && <Button disabled={isLoading} onClick={() => { onClose() }} >
                             <HStack><AiFillCloseCircle /><Text>ביטול</Text></HStack>
                         </Button>}
-
                         <Spacer></Spacer>
                         <Button type="submit" colorScheme="green" bgColor={btnConfig[method].c} {...{ isLoading }}>
                             {btnConfig[method].t}
@@ -80,4 +73,4 @@ function CategoryForm({ category, onClose, onSuccess }) {
         </>
     )
 }
-export default CategoryForm
+export default ManagerForm

@@ -28,11 +28,11 @@ module.exports = {
       // return success message
       return res.status(200).json({
         success: true,
-        message: `success to add new manager`,
+        message: `מנהל נוסף בהצלחה`,
       });
     } catch (error) {
       return res.status(500).json({
-        message: `error in add manager`,
+        message: `שגיאה בהוספת מנהל חדש`,
         error: error.message,
       });
     }
@@ -40,19 +40,21 @@ module.exports = {
 
   getAll: async (req, res) => {
     try {
-      const models = await MangerModel.find().populate([
-        "cart",
-        "orders.order",
-      ]).exec();
+      const managers = await MangerModel.find().exec();
+
+      managers.forEach(m => {
+        m.password = undefined;
+        m.tokens = undefined;
+      })
 
       return res.status(200).json({
         success: true,
-        message: `success to find all managers`,
-        managers: models,
+        message: `כל המנהלים נשלפו בהצלחה`,
+        managers
       });
     } catch (error) {
       return res.status(500).json({
-        message: `error in get all managers`,
+        message: `שגיאה בזמן שליפת מנהלים`,
         error: error.message,
       });
     }
@@ -60,19 +62,16 @@ module.exports = {
 
   getById: async (req, res) => {
     try {
-      const models = await MangerModel.findById(req.params.id).populate([
-        "cart",
-        "orders.order",
-      ]).exec();
+      const models = await MangerModel.findById(req.params.id).exec();
 
       return res.status(200).json({
         success: true,
-        message: `success to find manager by id`,
+        message: `מנהל נשלף בהצלחה`,
         managers: models,
       });
     } catch (error) {
       return res.status(500).json({
-        message: `error in find manager by id}`,
+        message: `שגיאה בשליפת מנהל`,
         error: error.message,
       });
     }
@@ -82,15 +81,41 @@ module.exports = {
     try {
       const id = req.params.id;
 
+      //prevent password changing if not specified by user
+      if (req.body.password == "" || req.body.password?.length < 4)
+        delete req.body.password;
+
       await MangerModel.findByIdAndUpdate(id, req.body).exec();
 
       return res.status(200).json({
         success: true,
-        message: `success to update manager by id`,
+        message: `מנהל עודכן בהצלחה`,
       });
     } catch (error) {
       return res.status(500).json({
-        message: `error in update manager by id`,
+        message: `שגיאה בזמן עדכון מנהל`,
+        error: error.message,
+      });
+    }
+  },
+
+  updateSelf: async (req, res) => {
+    try {
+      const id = req.manager.id;
+      delete req.body.permission; //prevent editing self permission
+      //prevent password changing if not specified by user
+      if (req.body.password == "" || req.body.password.length < 4)
+        delete req.body.password;
+
+      await MangerModel.findByIdAndUpdate(id, req.body).exec();
+
+      return res.status(200).json({
+        success: true,
+        message: `מנהל עודכן בהצלחה`,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: `שגיאה בזמן עדכון מנהל`,
         error: error.message,
       });
     }
@@ -104,11 +129,11 @@ module.exports = {
 
       return res.status(200).json({
         success: true,
-        message: `success to delete manager by id`,
+        message: `מנהל נמחק בהצלחה`,
       });
     } catch (error) {
       return res.status(500).json({
-        message: `error in delete manager by id`,
+        message: `שגיאה בזמן מחיקת מנהל`,
         error: error.message,
       });
     }
@@ -156,6 +181,7 @@ module.exports = {
           _id: manager._id,
           name: manager.name,
           email: manager.email,
+          permission: manager.permission
         },
       });
     } catch (error) {

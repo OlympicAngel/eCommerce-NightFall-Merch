@@ -13,13 +13,19 @@ const managers = require('../controllers/managers_controller');
 router.post('/managers/login', managers.login);
 router.get('/managers/logout', auth_manager, managers.logout);
 router.get('/managers/auth', auth_manager, managers.authManagerToken);
-//managers actions
+//managers actions - control users
 router.get('/manage', auth_manager, users.manage.getAll);
 router.get('/manage/:id', auth_manager, users.manage.getById);
 router.put('/manage/:id', auth_manager, users.manage.updateById);
+//managers actions - control managers
+router.get('/managers/', auth_manager, managers.getAll)
+router.put('/managers/', auth_manager, managers.updateSelf)
 
-//admins actions
-router.post('/admins/add-manager', auth_admin, managers.addManagerForAdmins);
+//admins actions - control managers
+router.post('/managers/', auth_admin, managers.addManagerForAdmins);
+router.put('/managers/:id', auth_admin, managers.updateById)
+router.delete('/managers/:id', auth_admin, managers.deleteById);
+//admins actions - control users
 router.delete('/manage/:id', auth_admin, users.manage.deleteById);
 
 //users login

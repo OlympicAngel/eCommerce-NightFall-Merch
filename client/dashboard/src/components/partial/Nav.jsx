@@ -45,7 +45,6 @@ export default function Nav() {
         }, false)
     }, [])
 
-
     return (<>
         <Box onClick={closeMenu} display={["block", "none"]} position={"absolute"} inset="0" zIndex={1} backdropFilter={"blur(0.2em)"}
             opacity={isOpen ? 1 : 0} pointerEvents={isOpen ? "all" : "none"} transition={"opacity 0.3s"} transitionDelay={(~~!isOpen) * 0.15 + "s"}

@@ -17,7 +17,8 @@ const schema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        minlength: [4, "סיסמה חייבת להיות לפחות 4 תווים"],
     },
     tokens: [{ type: Object }],
     permission: {

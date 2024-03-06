@@ -1,18 +1,26 @@
-import { HStack, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
+import { HStack, Input, InputGroup, InputRightElement, Text, useColorModeValue } from "@chakra-ui/react"
 import { useState } from "react"
 import { BiSearchAlt2 } from "react-icons/bi"
 
 function SearchList({ list, filteredList, searchLogic, placeholder = "חיפוש" }) {
     if (!searchLogic)
         throw new Error("Missing {searchLogic} props, please use useSearchLogic hook")
-    const { setSearchTerm } = searchLogic
+    const { setSearchTerm } = searchLogic;
+
+
+    const colors = useColorModeValue(
+        ["white"],
+        ["gray.300"]
+    )
+
     return (
-        <InputGroup >
+        <InputGroup>
             <HStack w={"inherit"}>
                 <InputRightElement pointerEvents='none'>
                     <BiSearchAlt2 />
                 </InputRightElement>
-                <Input p={"1em"} pr={"2.5em"} type='search' onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+                <Input p={"1em"} pr={"2.5em"} type='search' borderColor={colors[0]} borderWidth={2}
+                    onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
                     placeholder={placeholder} />
                 {list && filteredList && <Text whiteSpace={"nowrap"}>{filteredList.length} מתוך {list.length}</Text>}
 

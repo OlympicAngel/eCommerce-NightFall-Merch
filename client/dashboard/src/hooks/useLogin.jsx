@@ -7,7 +7,7 @@ import { useToast } from "@chakra-ui/react";
 
 
 function useLogin() {
-    const { SERVER, setIsAuth } = useContext(AuthContext)
+    const { SERVER, setIsAuth, setManager } = useContext(AuthContext)
     const toast = useToast()
     const url = SERVER + "users/managers/login";
 
@@ -23,6 +23,7 @@ function useLogin() {
         },
         onSuccess: (res) => {
             setIsAuth(true)
+            setManager(res.data.manager)
             toastSuccess(res.data.message, toast)
         }
     })
