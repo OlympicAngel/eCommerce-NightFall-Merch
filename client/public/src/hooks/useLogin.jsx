@@ -1,4 +1,4 @@
-import { useMutation } from "react-query"
+import { useMutation } from '@tanstack/react-query'
 import { AuthContext } from "../context/AuthProvider";
 import { useContext } from "react";
 import axios from "axios";

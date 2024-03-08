@@ -1,57 +1,32 @@
 import { AiFillCloseCircle } from "react-icons/ai";
-import { Flex, Button, Container, Spacer, Text, HStack, Image, FormLabel, useToast, Textarea } from "@chakra-ui/react";
+import { Flex, Button, Container, Spacer, Text, HStack, Image, FormLabel, Textarea } from "@chakra-ui/react";
 import FormInput from "./components/FormInput";
 import { useContext, useRef, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AuthContext } from "../../context/AuthProvider";
-import axios from "axios";
-import { toastError, toastSuccess } from "../../utils/toast.helper";
 import { Form, Formik } from "formik";
 import * as yup from "yup";
 import FormSelect from "./components/FormSelect";
-import useGetCategories from "../../hooks/useGetCategories";
+import useQueryLogic from "../../hooks/useQueryLogic";
+import useMutationLogic from "../../hooks/useMutationLogic";
 
 
 function ProductForm({ product = {}, method = "post", closeDialog, btnText = "הוסף" }) {
     const { SERVER } = useContext(AuthContext)
-    const url = SERVER + "products";
-
     const formRef = useRef()
     const [image, setImage] = useState(product.image);
-    const toast = useToast();
-
     const buttonColorConfig = { post: "green.200", put: "orange.300" }
-
-    const allCategories = useGetCategories();
+    const allCategories = useQueryLogic({ "key": "categories", "urlPath": "categories" });
 
     //send request & data handlers
-    const queryClient = useQueryClient()
-    const mutation = useMutation({
-        mutationFn: async () => {
-            const formData = new FormData(formRef.current);
-            let dynUrl = url;
-            if (method == "put")
-                dynUrl = `${url}/${product._id}`;
-            return await axios({
-                "url": dynUrl,
-                "method": method,
-                "data": formData,
-                "headers": { "Content-Type": "multipart/form-data" },
-                "withCredentials": true
-            })
-        },
-        onSuccess: (res) => {
-            queryClient.invalidateQueries("getProducts")
-            //if can close containing dialog - close
+    const mutation = useMutationLogic({
+        "relatedQuery": "products",
+        "urlPath": `products${method == "put" ? `/${product._id}` : ""}`,
+        onSuccess: () => {
             closeDialog && closeDialog();
-            //else reset form content
-            formRef.current.reset();
-            toastSuccess(res.data.message, toast)
         },
-        onError: (e, a, b) => {
-            toastError(e, toast)
-        }
+        method
     })
+    //const formData = new FormData(formRef.current);
     const isLoading = mutation.isLoading;
 
     function updateImageView(e) {
@@ -65,13 +40,13 @@ function ProductForm({ product = {}, method = "post", closeDialog, btnText = "ה
 
     return (
         <Formik
-            initialValues={{ name: product.name, price: product.price, description: product.description, category: product.category?._id || "", image: image || "" }}
+            initialValues={{ name: product.name || "", price: product.price || "", description: product.description || "", category: product.category?._id || "", image: image || "" }}
             validationSchema={yup.object({
                 name: yup.string().required("חייב להזין שם").min(2, "שם קצר מידי"),
                 price: yup.number().required("חייב להזין מחיר כלשהו").min(0, "מחיר לא יכול להיות שלילי"),
                 category: yup.string().required("חייב לבחור קטגוריה")
             })}
-            onSubmit={(values, actions) => { mutation.mutate() }}>
+            onSubmit={(values, actions) => { mutation.mutate(values); console.log(values) }}>
             <Container as={Form} p="1em" ref={formRef}>
                 <Flex gap="1em">
                     <FormInput placeholder={"שם"} name="name" isRequired={true} min="1" />

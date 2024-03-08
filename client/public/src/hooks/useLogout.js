@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useContext } from "react";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { AuthContext } from "../context/AuthProvider";
 import { toastSuccess } from "../utils/toast.helper";
 import { useToast } from "@chakra-ui/react";

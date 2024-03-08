@@ -1,26 +1,26 @@
-import { useContext } from "react"
-import { AuthContext } from "../context/AuthProvider"
-import { useQuery } from "react-query"
-import axios from "axios"
+
 import OrdersList from "../components/orders/OrdersList"
 import { Card } from "@chakra-ui/react"
+import useQueryLogic from "../hooks/useQueryLogic"
+import Error from "../components/partial/Error";
+import Pagination, { usePaginationLogic } from "../components/Sorters&Filters/Pagination";
 
 function Order() {
-    const { SERVER } = useContext(AuthContext)
-    const { isLoading, data, isError } = useQuery({
-        queryKey: ["getOrders"],
-        queryFn: async () => await axios.get(`${SERVER}orders/manage`, { withCredentials: true }),
-        select: (res) => res.data.orders,
-        staleTime: 1000 * 60, //dont send request (use cache) if not older then 60 sec
-        refetchInterval: 1000 * 60,
-        retry: 0
-    })
+    const paginationLogic = usePaginationLogic()
+    let { isLoading, data, error } = useQueryLogic({
+        "key": ["orders", paginationLogic.itemsPerPages, paginationLogic.cPage],
+        "urlPath": `orders/manage?page=${paginationLogic.cPage + 1}&limit=${paginationLogic.itemsPerPages}`,
+        select: res => res.data
+    });
+
+    console.log(data)
 
     return (
         <Card w="100%" p={["0.5em", "1em"]} boxShadow="2xl" bg="black.100">
-            <OrdersList {...{ orders: data }}></OrdersList>
+            <OrdersList {...{ orders: data?.orders, isLoading }}></OrdersList>
+            {data?.pages != undefined && <Pagination paginationLogic={paginationLogic} pages={data?.pages} />}
+            <Error error={error} />
         </Card>
-
     )
 }
 export default Order

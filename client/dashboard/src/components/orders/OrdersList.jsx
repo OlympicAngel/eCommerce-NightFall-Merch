@@ -1,25 +1,20 @@
 import { ImSad2 } from "react-icons/im";
-import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
-import { BiSearchAlt2 } from "react-icons/bi";
 import { FaInfoCircle } from "react-icons/fa";
 import { CgFileDocument } from "react-icons/cg";
 import { HiLocationMarker } from "react-icons/hi";
-import { FaShekelSign } from "react-icons/fa";
-import { Heading, Box, useToast, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, StatLabel, Stat, StatNumber, StatHelpText, Divider, Text, CardHeader, Flex, RadioGroup, Button, Stack, Radio, Badge, VStack, Tag, InputGroup, InputLeftAddon, Input, InputLeftElement, Spacer, InputRightElement, HStack } from "@chakra-ui/react"
-import { useContext, useState } from "react";
-import { AuthContext } from "../../context/AuthProvider";
+import { Box, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Divider, Text, Flex, Button, Tag } from "@chakra-ui/react";
 import OrderStatus from "./OrderStatus";
-import { useMutation, useQueryClient } from "react-query";
-import axios from "axios";
-import { toastError, toastSuccess } from "../../utils/toast.helper"
 import FilterButtons, { FilterBtn } from "../Sorters&Filters/FilterButtons";
 import SortButtons, { SortBtn } from "../Sorters&Filters/SortButtons";
 import OrderFullview from "./OrderFullview";
 import HeaderCRUD from "../partial/HeaderCRUD";
 import Search, { useSearchLogic } from "../Sorters&Filters/SearchList";
+import Loader from "../partial/Loader";
+import useMutationLogic from "../../hooks/useMutationLogic";
+import { useState } from "react";
 
 
-function OrdersList({ orders = [] }) {
+function OrdersList({ orders = [], isLoading }) {
     //manually control which accordion item is open (in order to be able to close it on wil)
     const [accordionIndex, setAccordionIndex] = useState([])
     //handler to easy toggle item in the array
@@ -44,7 +39,10 @@ function OrdersList({ orders = [] }) {
     const sorters = genSortOptions() //gen sort option list
     const sortLogic = SortBtn.useSortLogic(sorters)//use hook with <SortButtons> comp
 
-    filteredOrders = filteredOrders.filter(filterLogic.filterFn).filter(searchLogic.filterFn).sort(sortLogic.sortFn)
+    filteredOrders = filteredOrders
+        .filter(filterLogic.filterFn)
+        .filter(searchLogic.filterFn)
+        .sort(sortLogic.sortFn)
 
 
     const [fullview, setFullview] = useState();
@@ -56,11 +54,15 @@ function OrdersList({ orders = [] }) {
             </HeaderCRUD>
             <Search list={orders} filteredList={filteredOrders} searchLogic={searchLogic} placeholder='חיפוש הזמנה לפי שם, לקוח, מחיר, תאריך וכו...' />
             <SortButtons sortLogic={sortLogic} onChange={() => { setAccordionIndex([]) }} />
-            {orders.length == 0 && <Box textAlign={"center"} as={"i"} color="gray.500"> ~ אין כרגע הזמנות <ImSad2 /> ~</Box>}
-            {filteredOrders.length == 0 && orders.length > 0 && <Box textAlign={"center"} as={"i"} color="gray.500"> ~ אין תוצאות - יש לשנות את סגנון הסינון ~</Box>}
-            <Accordion w="100%" allowMultiple index={accordionIndex}>
-                {filteredOrders.map((order, index) => <OrderRow id={index} key={order._id} {...{ order, index, addAccordionIndex, setFullview }} />)}
-            </Accordion>
+            {isLoading &&
+                <Loader /> ||
+                <>
+                    {orders.length == 0 && <Box textAlign={"center"} as={"i"} color="gray.500"> ~ אין כרגע הזמנות <ImSad2 /> ~</Box>}
+                    {filteredOrders.length == 0 && orders.length > 0 && <Box textAlign={"center"} as={"i"} color="gray.500"> ~ אין תוצאות - יש לשנות את סגנון הסינון ~</Box>}
+                    <Accordion w="100%" allowMultiple index={accordionIndex}>
+                        {filteredOrders.map((order, index) => <OrderRow id={index} key={order._id} {...{ order, index, addAccordionIndex, setFullview }} />)}
+                    </Accordion>
+                </>}
             <OrderFullview {...{ order: fullview, setFullview }} />
         </>
     )
@@ -68,19 +70,11 @@ function OrdersList({ orders = [] }) {
 
 //each order row element
 function OrderRow({ order, index, addAccordionIndex, setFullview }) {
-    const toast = useToast();
-    const { SERVER } = useContext(AuthContext)
-    const API = `${SERVER}orders/manage/${order._id}/status`;
-
-    const queryClient = useQueryClient()
-    const { mutate } = useMutation({
-        mutationFn: async (status) => await axios.put(API, { status }, { withCredentials: true }),
-        onError: (e) => { toastError(e, toast) },
-        onSuccess: (res) => {
-            toastSuccess(res.data.message, toast);
-            queryClient.invalidateQueries("getOrders")
-        }
-    })
+    const updateOrder = useMutationLogic({
+        "urlPath": `orders/manage/${order._id}/status`,
+        "method": "put",
+        "relatedQuery": "orders"
+    }).mutate;
     const customer = order.customer_details;
 
     return <AccordionItem id={order._id} borderTopColor="purple.600" _odd={{ bg: "rgba(0,0,0,0.15)" }} bg="rgba(255,255,255,0.05)" borderRadius={"1em"}>
@@ -100,7 +94,7 @@ function OrderRow({ order, index, addAccordionIndex, setFullview }) {
                 <OrderInfo order={order} key={order._id} />
                 <Button background={"purple.500"} onClick={() => setFullview(order)}>תצוגה מלאה</Button>
                 <Divider mt={"1em"} mb={"1em"} />
-                <OrderStatus status={order.status} onChange={(newState) => mutate(newState)} />
+                <OrderStatus status={order.status} onChange={(newState) => updateOrder(newState)} />
                 <Box textAlign={"center"} fontSize={"0.7em"}>- לחץ בכדי לעדכן סטטוס -</Box>
             </AccordionPanel>
         </>

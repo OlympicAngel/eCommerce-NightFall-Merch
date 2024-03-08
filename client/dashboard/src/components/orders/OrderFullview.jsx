@@ -1,28 +1,21 @@
-import { Box, Button, Card, Divider, Flex, Heading, Table, TableContainer, Tbody, Td, Text, Tfoot, Th, Thead, Tr, useDisclosure, useToast } from "@chakra-ui/react"
+import { Box, Button, Divider, Flex, Heading, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useDisclosure } from "@chakra-ui/react"
 import Dialog from "../partial/Dialog"
-import { useContext, useEffect } from "react"
-import { useMutation, useQuery, useQueryClient } from "react-query"
-import axios from "axios"
-import { AuthContext } from "../../context/AuthProvider"
-import { toastError, toastSuccess } from "../../utils/toast.helper"
+import { useEffect } from "react"
+import useMutationLogic from "../../hooks/useMutationLogic"
 
 
 
 function OrderFullview({ order, setFullview }) {
-    //delete method
-    const { SERVER } = useContext(AuthContext)
-    const toast = useToast();
-    const queryClient = useQueryClient()
-    const deleteOrder = useMutation({
-        mutationFn: async (id) => axios.delete(`${SERVER}orders/manage/${id}`, { "withCredentials": true }),
-        onError: (e) => { toastError(e, toast) },
-        onSuccess: (res) => {
-            toastSuccess(res.data.message, toast);
-            queryClient.invalidateQueries("getOrders")
-            setFullview()//close dialog
-        }
-    })
+    if (!order)
+        return;
 
+    //delete method
+    const deleteOrder = useMutationLogic({
+        "method": "delete",
+        "onSuccess": () => { setFullview() },
+        "relatedQuery": "orders",
+        "urlPath": `orders/manage/${order._id}`
+    })
 
     //simplified object access
     const payment = order?.payment_details, customer = order?.customer_details
@@ -38,9 +31,6 @@ function OrderFullview({ order, setFullview }) {
         if (order)
             onOpen();
     }, [order])
-
-    if (!order)
-        return;
 
     const header = <Heading as='h1' display={"inline-block"}>פרטי הזמנה: {order?._id}</Heading>;
     return (
@@ -117,7 +107,7 @@ function OrderFullview({ order, setFullview }) {
                     </Table>
                 </Box>
             </Box>
-            <Button onClick={() => deleteOrder.mutate(order._id)} mt="5" p={"0.2em 1em"} h={"auto"} colorScheme="red" bg={"red.500"} color={"orange.100"} fontSize={"1em"}>מחק הזמנה</Button>
+            <Button onClick={() => deleteOrder.mutate()} mt="5" p={"0.2em 1em"} h={"auto"} colorScheme="red" bg={"red.500"} color={"orange.100"} fontSize={"1em"}>מחק הזמנה</Button>
         </Dialog>
     )
 }

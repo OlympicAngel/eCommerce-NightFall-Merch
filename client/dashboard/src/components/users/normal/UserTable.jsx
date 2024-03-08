@@ -1,15 +1,17 @@
-import { Button, Flex, Table, TableCaption, TableContainer, Tbody, Td, Tfoot, Th, Thead, Tr } from "@chakra-ui/react"
+import { AiFillEye } from "react-icons/ai";
+import { Button, Flex, HStack, Table, TableCaption, TableContainer, Tbody, Td, Tfoot, Th, Thead, Tr, VStack } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import UserFullview from "./UserFullview"
+import { AiOutlineEdit } from "react-icons/ai"
 
-function UserTable({ users = [], colorScheme = "purple" }) {
+function UserTable({ users = [], colorScheme = "purple", setEditUser }) {
     const [showUser, setShowUser] = useState()
 
     return (<>
         <TableContainer>
             <Table variant='striped' colorScheme={colorScheme} size={["xs", "xs", "sm", "md", "lg"]}>
                 <Thead><HeaderCategories /></Thead>
-                <Tbody>{users.map(u => <UserRow key={u._id} user={u} setShowUser={setShowUser} />)}</Tbody>
+                <Tbody>{users.map(u => <UserRow key={u._id} user={u} setShowUser={setShowUser} setEditUser={setEditUser} />)}</Tbody>
                 <Tfoot><HeaderCategories /></Tfoot>
             </Table>
         </TableContainer>
@@ -30,7 +32,7 @@ function HeaderCategories() {
     </Tr>
 }
 
-function UserRow({ user, setShowUser }) {
+function UserRow({ user, setShowUser, setEditUser }) {
     return <Tr>
         <Td>{user.name}</Td>
         <Td display={["none", "table-cell"]}>{user.email}</Td>
@@ -42,8 +44,8 @@ function UserRow({ user, setShowUser }) {
         </Td>
         <Td>
             <Flex gap="1em">
-                <Button colorScheme="orange">עדכן</Button>
-                <Button bg="gray.900" color={"gray.100"} _hover={{ bg: "gray.700" }} onClick={() => { setShowUser(user) }}>הצג</Button>
+                <Button colorScheme="orange" onClick={() => { setEditUser(user) }} ><AiOutlineEdit /> עדכן</Button>
+                <Button as={HStack} bg="gray.900" color={"gray.100"} _hover={{ bg: "gray.700" }} onClick={() => { setShowUser(user) }}><AiFillEye />הצג</Button>
             </Flex>
         </Td>
     </Tr>

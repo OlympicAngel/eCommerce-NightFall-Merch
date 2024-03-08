@@ -13,26 +13,11 @@ module.exports = {
   //get all products
   getAll: async (req, res) => {
     try {
-      /*       const { page = 1, limit = 3} = req.query;
-
-      const count = await ProductModel.count();
-
-      console.log(count);
-
-      const pages = Math.ceil(count / limit);
-
-      console.log(pages);
-
-      const products = await ProductModel.find().skip((page - 1 ) * limit).limit(limit).exec(); */
-
       const products = await ProductModel.find().populate({ path: "category" }).exec();
 
       return res.status(200).json({
         success: true,
         message: `רשימת מוצרים נשלפה בהצלחה`,
-        /*         limit,
-        count,
-        pages, */
         products,
       });
     } catch (error) {
@@ -94,6 +79,7 @@ module.exports = {
           name,
           description = "",
           price,
+          category
         } = req.body;
 
         // creating ProductModel using the values from req.body

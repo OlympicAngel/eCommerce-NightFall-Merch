@@ -2,47 +2,35 @@ import { AiFillPlusCircle, AiOutlineEdit } from "react-icons/ai";
 import { BsFillTrashFill } from "react-icons/bs";
 import { IoMdOptions } from "react-icons/io";
 import { BiChevronDown } from "react-icons/bi";
-import { TableContainer, Table, Menu, Thead, Tr, Th, Button, MenuButton, Tbody, Td, MenuItem, Tooltip, Heading, MenuList, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Image, Text, HStack, Container, Flex, Box, useToast, Skeleton, Badge } from "@chakra-ui/react"
-import { useContext, useState } from "react";
+import { TableContainer, Table, Menu, Thead, Tr, Th, Button, MenuButton, Tbody, Td, MenuItem, Tooltip, MenuList, useDisclosure, Image, Text, HStack } from "@chakra-ui/react";
+import { useState } from "react";
 import Dialog from "../partial/Dialog";
 import ProductForm from "../forms/ProductForm";
-import { AuthContext } from "../../context/AuthProvider";
-import { useMutation, useQueryClient } from "react-query";
-import axios from "axios";
-import { toastSuccess } from "../../utils/toast.helper";
 import HeaderCRUD from "../partial/HeaderCRUD";
 import CategoryBadge from "../categories/CategoryBadge";
-import useCategories from "../../hooks/useGetCategories";
 import FilterButtons, { FilterBtn } from "../Sorters&Filters/FilterButtons";
 import SortButtons, { SortBtn } from "../Sorters&Filters/SortButtons";
 import SearchList, { useSearchLogic } from "../Sorters&Filters/SearchList";
+import useQueryLogic from "../../hooks/useQueryLogic";
+import Loader from "../partial/Loader";
+import useMutationLogic from "../../hooks/useMutationLogic";
+import Pagination, { usePaginationLogic } from "../Sorters&Filters/Pagination";
 
 
-function ProductsTable({ products = [] }) {
-    const { SERVER } = useContext(AuthContext)
-    const API = SERVER + "products";
-
-    const categories = useCategories();
-
+function ProductsTable({ products = [], isLoading }) {
+    const categories = useQueryLogic({ "key": "categories", "urlPath": "categories" });
 
     //set actions options for products
     const [userAction, setUserAction] = useState({ action: null, product: null });
     //handlers for dialog logic
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    //delete toast handler
-    const toast = useToast();
-    //delete logic
-    const queryClient = useQueryClient()
-    const deleteMutation = useMutation({
-        "mutationFn": async (product) => await axios({ "url": `${API}/${product._id}`, "method": "delete" }),
-        "onSuccess": (res, product) => {
-            queryClient.invalidateQueries("getProducts");
-            toastSuccess(res.data.message, toast)
-        },
-        "onError": (e) => toastError(e, toast)
+    const deleteProduct = useMutationLogic({
+        urlPath: (product) => `products/${product._id}`,
+        relatedQuery: "products",
+        method: "delete",
     })
-    const isDeleting = deleteMutation.isLoading;
+    const isDeleting = deleteProduct.isLoading;
 
     //handle user option that uses Dialog module
     let promptConfig = {};
@@ -54,7 +42,7 @@ function ProductsTable({ products = [] }) {
                 content: "אתה עומד למחוק מוצר זה לצימות, בטוח שזו הפעולה שאתה רוצה?",
                 action: "מחק!",
                 confirmColor: "red.500",
-                onConfirm: () => { deleteMutation.mutate(userAction.product) },
+                onConfirm: () => { deleteProduct.mutate(userAction.product) },
                 isLoading: isDeleting
             }
             break;
@@ -87,34 +75,48 @@ function ProductsTable({ products = [] }) {
 
     const searchLogic = useSearchLogic({ "onlyStartWith": false });
 
-    let productShowList = products.filter(filterLogic.filterFn).filter(searchLogic.filterFn).sort(sortLogic.sortFn)
+
+    let filteredList = products
+        .filter(filterLogic.filterFn)
+        .filter(searchLogic.filterFn)
+        .sort(sortLogic.sortFn);
+
+    const paginationLogic = usePaginationLogic()
+    let productShowList = filteredList.slice(paginationLogic.pageFirstItemIndex, paginationLogic.pageLastItemIndex)
+
     return (
         <>
-            <TableContainer w="100%">
-                <HeaderCRUD name="מוצרים" list={productShowList} onAdd={() => {
-                    setUserAction({ action: "add" });
-                    onOpen()
-                }}>
-                    <FilterButtons filterLogic={filterLogic} />
-                </HeaderCRUD>
-                <SearchList list={products} filteredList={productShowList} searchLogic={searchLogic} placeholder="חיפוש מוצר לפי שם, מחיר, קטגוריה, מזהה וכו'.. " />
-                <SortButtons sortLogic={sortLogic} />
+            <HeaderCRUD name="מוצרים" list={productShowList} onAdd={() => {
+                setUserAction({ action: "add" });
+                onOpen()
+            }}>
+                <FilterButtons filterLogic={filterLogic} />
+            </HeaderCRUD>
+            <SearchList list={products} filteredList={productShowList} searchLogic={searchLogic} placeholder="חיפוש מוצר לפי שם, מחיר, קטגוריה, מזהה וכו'.. " />
+            <SortButtons sortLogic={sortLogic} />
+            {isLoading &&
+                <Loader /> ||
+                <>
+                    <TableContainer w="100%">
+                        <Table variant='simple' colorScheme='purple' w="100%">
+                            <Thead>
+                                <Tr>
+                                    <Th display={["none", "none", "table-cell"]} w={"20"}></Th>
+                                    <Th>שם המוצר</Th>
+                                    <Th>מחיר</Th>
+                                    <Th display={["none", "table-cell"]}>קטגוריה</Th>
+                                    <Th>פעולות</Th>
+                                </Tr>
+                            </Thead>
+                            <Tbody>
+                                {productShowList.map(p => <ProductRow key={p._id || Math.random()} {...{ p, setUserAction, onOpen, categories }} />)}
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
+                    <Pagination list={filteredList} paginationLogic={paginationLogic}></Pagination>
+                </>
+            }
 
-                <Table variant='simple' colorScheme='purple' w="100%">
-                    <Thead>
-                        <Tr>
-                            <Th display={["none", "none", "table-cell"]} w={"20"}></Th>
-                            <Th>שם המוצר</Th>
-                            <Th>מחיר</Th>
-                            <Th display={["none", "table-cell"]}>קטגוריה</Th>
-                            <Th>פעולות</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {productShowList.map(p => <ProductRow key={p._id || Math.random()} {...{ p, setUserAction, onOpen, categories }} />)}
-                    </Tbody>
-                </Table>
-            </TableContainer>
             <Dialog isOpen={isOpen} onOpen={onOpen} onClose={onClose} config={promptConfig} >
                 {promptConfig.content}
             </Dialog>
@@ -124,7 +126,9 @@ function ProductsTable({ products = [] }) {
 
 function ProductRow({ p, setUserAction, onOpen, categories }) {
     //load category from query - will auto update when change
-    const categoryFromQuery = categories?.data?.find(c => c._id == p.category._id)
+    let categoryFromQuery = categories?.data?.find(c => c._id == p.category?._id)
+    if (!categoryFromQuery)
+        categoryFromQuery = { _id: "none", "name": "--", "color": "" }
 
     return <Tr>
         <Td display={["none", "none", "table-cell"]} pl={2} pr={2}>

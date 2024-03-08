@@ -10,6 +10,7 @@ module.exports = {
     try {
       // getting values from the body request
       const { name, email, password, phone, address } = req.body;
+      console.log({ name, email, password, phone, address })
       // creating UserModel using the values from req.body
       const new_User = UserModel({
         name,
@@ -28,6 +29,7 @@ module.exports = {
         message: `משתמש נוצר בהצלחה!`,
       });
     } catch (error) {
+      console.log(error)
       return res.status(500).json({
         message: `לא היה ניתן ליצור משתמש`,
         error: error.message,
@@ -171,8 +173,11 @@ module.exports = {
       if (!id)
         throw new Error("לא נמצא מזהה משתמש תקין");
 
+      if (req.body.password == "" || req.body.password?.length < 4)
+        delete req.body.password;
+
       //limit the fields use can change as we can not trust the input (use might attempt to change token etc..)
-      const { address, phone, password, email, name } = req.body
+      let { address, phone, password, email, name } = req.body
       await UserModel.findByIdAndUpdate(id, { address, phone, password, email, name });
 
       return res.status(200).json({
@@ -216,10 +221,10 @@ module.exports = {
         if (!id)
           throw new Error("לא התקבל מזהה משתמש תקין");
 
-        const user = await UserModel.findById(id)/* .populate([
-        "cart",
-        "orders.order",
-      ]) */;
+        const user = await UserModel.findById(id).populate([
+          //"cart",
+          "orders.order",
+        ]);
 
         return res.status(200).json({
           success: true,

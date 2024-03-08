@@ -1,3 +1,4 @@
+import { AiFillPhone } from "react-icons/ai";
 import { AiOutlineFieldNumber } from "react-icons/ai";
 import { AiOutlineNumber } from "react-icons/ai";
 import { FaUpload } from "react-icons/fa";
@@ -36,16 +37,19 @@ function FormInput(props) {
         case "file":
             icon = <FaUpload />
             break;
+        case "tel":
+            icon = <AiFillPhone />
+            break;
 
         case "number":
             icon = <AiOutlineFieldNumber />
             break;
     }
 
-    return <FormControl isRequired={isRequired} mb="1.5em" isInvalid={meta.error && meta.touched && gotInput}>
-        <FormLabel>{title || placeholder}</FormLabel>
+    return <FormControl style={{ flex: props.flex }} isRequired={isRequired} mb="1.5em" isInvalid={meta.error && meta.touched && gotInput}>
+        {title !== false && <FormLabel>{title || placeholder}</FormLabel>}
         <InputGroup >
-            <Input focusBorderColor={isValid ? validColor : "purple.500"} as={Field} {...props} pr="7" {...filed}
+            <Input focusBorderColor={isValid ? validColor : "purple.500"} as={Field} {...props} title="" pr="7" {...filed}
                 onChange={(e) => { onChange && onChange(e); filed.onChange(e) }} lineHeight={"2em"} />
             <InputIcon {...{ icon, validColor }} />
         </InputGroup>

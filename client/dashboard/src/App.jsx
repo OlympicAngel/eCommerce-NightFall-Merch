@@ -8,9 +8,10 @@ import {
   Outlet,
   Navigate
 } from "react-router-dom";
-import { Box, Container, Spinner } from "@chakra-ui/react";
+import { Box, Container } from "@chakra-ui/react";
 import { AuthContext } from "./context/AuthProvider";
 import useAuth from "./hooks/useAuth";
+import Loader from "./components/partial/Loader";
 //components
 const Nav = lazy(() => import("./components/partial/Nav"));
 const LoggedAdminFooter = lazy(() => import("./components/partial/LoggedAdminFooter"));
@@ -36,8 +37,8 @@ function Root() {
     </Box>
     <Container p={1} as="main" maxW='8xl' minH="100vh - 4em"
       fontSize={["xs", "sm", "md"]} borderRadius="1em" centerContent>
-      {isLoading && <CustomSpinner />}
-      <Suspense fallback={<CustomSpinner />} >
+      {isLoading && <Loader />}
+      <Suspense fallback={<Loader />} >
         {!isLoading && <Outlet />}
       </Suspense>
     </Container>
@@ -46,10 +47,6 @@ function Root() {
       <LoggedAdminFooter manager={manager}></LoggedAdminFooter>
       || <Box></Box>}
   </>
-}
-
-function CustomSpinner() {
-  return <Spinner colorScheme="purple" color='purple.500' size="xl" thickness="0.2em" />;
 }
 
 function App() {

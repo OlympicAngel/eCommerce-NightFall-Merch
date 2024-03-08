@@ -1,37 +1,22 @@
 import { BiCaretDown } from "react-icons/bi";
-import { AiFillCaretDown } from "react-icons/ai";
 import { IoMdColorPalette } from "react-icons/io";
 import { Button, Container, Flex, HStack, Heading, Spacer, Text, useToast } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import FormInput from "./components/FormInput";
 import * as yup from 'yup';
-import { useMutation, useQueryClient } from "react-query";
-import axios from "axios";
-import { useContext, useRef } from "react";
-import { AuthContext } from "../../context/AuthProvider";
-import { toastError, toastSuccess } from "../../utils/toast.helper";
+import { useRef } from "react";
 import { AiFillCloseCircle, AiFillPlusCircle, AiOutlineEdit } from "react-icons/ai";
 import FormSelect from "./components/FormSelect";
+import useMutationLogic from "../../hooks/useMutationLogic";
 
-function CategoryForm({ category, onClose, onSuccess }) {
+function CategoryForm({ category, onClose }) {
     const method = category ? "put" : "post";
 
-    const toast = useToast()
-    const { SERVER } = useContext(AuthContext)
-    const queryClient = useQueryClient()
-    const categoryCRUD = useMutation({
-        mutationFn: async (data) => axios({
-            "url": `${SERVER}categories/${category ? category._id : ""}`,
-            method,
-            "data": data,
-            "withCredentials": true
-        }),
-        onError: (e) => toastError(e, toast),
-        onSuccess: (res) => {
-            toastSuccess(res.data.message, toast);
-            queryClient.invalidateQueries("getCategories")
-            onClose();
-        }
+    const categoryCRUD = useMutationLogic({
+        urlPath: `categories/${category ? category._id : ""}`,
+        relatedQuery: "categories",
+        onSuccess: onClose,
+        method,
     })
     const { isLoading } = categoryCRUD;
 
@@ -43,15 +28,12 @@ function CategoryForm({ category, onClose, onSuccess }) {
 
     return (
         <>
-            <Heading>
-                {btnConfig[method].tSimple} קטגוריה:
-            </Heading>
+            <Heading>{btnConfig[method].tSimple} קטגוריה:</Heading>
             <Formik
                 initialValues={{ name: category?.name || "", color: category?.color || "" }}
                 validationSchema={yup.object({ name: yup.string().required("חייב להזין שם").min(2, "שם קצר מידי"), })}
                 onSubmit={(values, actions) => { categoryCRUD.mutate(values) }}>
                 <Container as={Form} p="1em" ref={formRef}>
-
                     <FormInput placeholder={"שם הקטגוריה"} name="name" isRequired={true} min="2" />
                     <FormSelect title="צבע הקטגוריה" placeholder={"בחר צבע"} icon={<><IoMdColorPalette /><BiCaretDown /></>} name="color" isRequired={true} min="2">
                         <Text as={"option"} value="red" color={"red.500"}>אדום</Text>
@@ -68,13 +50,11 @@ function CategoryForm({ category, onClose, onSuccess }) {
                         {onClose && <Button disabled={isLoading} onClick={() => { onClose() }} >
                             <HStack><AiFillCloseCircle /><Text>ביטול</Text></HStack>
                         </Button>}
-
                         <Spacer></Spacer>
                         <Button type="submit" colorScheme="green" bgColor={btnConfig[method].c} {...{ isLoading }}>
                             {btnConfig[method].t}
                         </Button>
                     </Flex>
-
                 </Container>
             </Formik>
         </>

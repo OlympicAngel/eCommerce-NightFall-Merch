@@ -22,11 +22,11 @@ module.exports = {
   managers: {
     add: async (req, res) => {
       try {
-        const { name } = req.body;
+        const { name, color } = req.body;
         if (!name || name.length < 2)
           throw new Error("שם הקטגוריה קצר מידי")
 
-        const category = new Category({ name });
+        const category = new Category({ name, color });
 
         await category.save();
 

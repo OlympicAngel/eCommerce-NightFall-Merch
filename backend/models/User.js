@@ -34,11 +34,6 @@ const User = new Schema({
             trim: true,
             required: true
         },
-        building: {
-            type: String,
-            trim: true,
-            required: true
-        },
         apartment: {
             type: String,
             trim: true
@@ -62,11 +57,12 @@ const User = new Schema({
 User.pre('save', async function (next) {
     // only hash the password if it has been modified (or is new)
     if (!this.isModified('password')) return next();
-
-    const hash = await bcrypt.hash(this.password, 15);
-    this.password = hash;
+    this.password = await hash(this.password)
     next();
 })
 
+async function hash(pass) {
+    return await bcrypt.hash(pass, 15);
+}
 
 module.exports = mongoose.model('users', User)

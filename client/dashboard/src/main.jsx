@@ -3,11 +3,8 @@ import App from './App.jsx'
 import './index.css'
 import { ChakraProvider } from '@chakra-ui/react'
 import AuthProvider from './context/AuthProvider.jsx'
-import {
-  QueryClient,
-  QueryClientProvider,
-} from 'react-query'
 import theme from './theme.js'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const queryClient = new QueryClient()
 

@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react"
 import { AuthContext } from "../context/AuthProvider"
-import { useQuery } from "react-query";
+import { useQuery } from '@tanstack/react-query';
 import axios from "axios";
 import { toastError } from "../utils/toast.helper";
 import { useToast } from "@chakra-ui/react";

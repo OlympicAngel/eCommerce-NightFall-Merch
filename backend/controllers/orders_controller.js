@@ -128,11 +128,22 @@ module.exports = {
     managers: {
         getAll: async (req, res) => {
             try {
-                const orders = await OrderModel.find().populate(['user', 'products.product']).exec();
+                let { page = 1, limit = 20 } = req.query;
+                limit = Math.min(limit, 50) //limit to up to 50 per request
+                //get product count
+                const count = await OrderModel.count();
+                const pages = Math.ceil(count / limit);
+
+                const orders = await OrderModel.find()
+                    .skip((page - 1) * limit).limit(limit)
+                    .populate(['user', 'products.product']).exec();
 
                 return res.status(200).json({
                     success: true,
                     message: `כל ההזמנות נשלפו בהצלחה`,
+                    limit,
+                    count,
+                    pages,
                     orders
                 })
             } catch (error) {

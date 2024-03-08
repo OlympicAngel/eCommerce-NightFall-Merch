@@ -1,27 +1,28 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../context/AuthProvider";
-import { useQuery } from "react-query";
-import axios from "axios";
-import { Box, Spinner } from "@chakra-ui/react";
 import HeaderCRUD from "../../partial/HeaderCRUD";
 import SearchList, { useSearchLogic } from "../../Sorters&Filters/SearchList";
 import SortButtons, { SortBtn } from "../../Sorters&Filters/SortButtons";
 import UserTable from "./UserTable";
+import Loader from "../../partial/Loader";
+import useQueryLogic from "../../../hooks/useQueryLogic";
+import Error from "../../partial/Error";
+import { Flex, useDisclosure } from "@chakra-ui/react";
+import Dialog from "../../partial/Dialog";
+import UserForm from "../../forms/UserForm";
+
 
 function NormalUsers() {
-    const { SERVER } = useContext(AuthContext)
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [editUser, setEditUser] = useState();
+    //when setting user - open edit view
+    useEffect(() => {
+        if (editUser && !isOpen)
+            onOpen();
+    }, [editUser])
 
     //get data
-    const { isLoading, isError, error, data } = useQuery(
-        {
-            queryKey: ["getUsers"],
-            queryFn: async () => await axios(SERVER + "users/manage", { withCredentials: true }),
-            select: (res) => res.data.users, //filter data to get only needed part
-            staleTime: 1000 * 60, //dont send request (use cache) if not older then 60 sec
-            refetchInterval: 1000 * 60,
-            retry: 0
-        }
-    );
+    const { isLoading, error, data } = useQueryLogic({ "key": "users", "urlPath": "users/manage" })
 
     //search
     const searchLogic = useSearchLogic();
@@ -36,24 +37,33 @@ function NormalUsers() {
         return orders.reduce((pre, o) => pre + o.total_price, 0)
     }
 
-    if (isLoading)
-        <Box position="relative" minH={"10vh"}>
-            <Spinner color="purple.100" size='xl' position={"absolute"} inset={0} margin={"auto"}></Spinner>
-        </Box>
-
     /** @type {[]} */
     const users = data || [];
     const filteredUsers = users.filter(searchLogic.filterFn).sort(sortLogic.sortFn);
 
     return (
-        <>
-            <HeaderCRUD name="משתמשים" list={filteredUsers} onAdd={() => { }}>
+        <Flex flexDirection={"column"} gap={"0.5em"}>
+            <HeaderCRUD name="משתמשים" list={filteredUsers} onAdd={onOpen}>
             </HeaderCRUD>
-            <br />
             <SearchList searchLogic={searchLogic} list={users} filteredList={filteredUsers}></SearchList>
             <SortButtons sortLogic={sortLogic} colorScheme="blue"></SortButtons>
-            <UserTable users={filteredUsers} colorScheme="teal"></UserTable>
-        </>
+            {isLoading &&
+                <Loader /> ||
+                <UserTable users={filteredUsers} colorScheme="teal" setEditUser={setEditUser}></UserTable>
+            }
+            <Error error={error} />
+            <UserDialog {...{ isOpen, onOpen, onClose, user: editUser, resetUser: setEditUser }} />
+        </Flex>
     )
+}
+
+function UserDialog({ isOpen, onOpen, onClose, user, resetUser }) {
+    const closeAndReset = () => {
+        resetUser();
+        onClose();
+    }
+    return <Dialog {...{ isOpen, onOpen, onClose, config: { hasForm: true, w: "fit-content" } }}>
+        <UserForm onClose={closeAndReset} user={user}></UserForm>
+    </Dialog>
 }
 export default NormalUsers

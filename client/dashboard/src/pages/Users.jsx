@@ -1,12 +1,9 @@
 import { BsPersonFillGear } from "react-icons/bs";
 import { FaUsers } from "react-icons/fa";
-import { Card, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack, useColorModeValue } from "@chakra-ui/react";
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthProvider";
-import { useQuery } from "react-query";
-import axios from "axios";
+import { Card, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue } from "@chakra-ui/react";
 import NormalUsers from "../components/users/normal/NormalUsers";
 import ManagerUsers from "../components/users/managers/ManagerUsers";
+import { useState } from "react";
 
 function Users() {
     const colors = useColorModeValue(

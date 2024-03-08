@@ -6,12 +6,8 @@ import {
   Thead,
   Tbody,
   Tr,
-  Th,
-  Td,
-  Input,
-  Button,
-  Text,
-  Image,
+  Th, Input,
+  Button
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -49,17 +45,17 @@ const PurchasePage = () => {
   };
 
 
-  const placeOrder = async()=>{
+  const placeOrder = async () => {
 
     try {
 
-      const {data : payment_status} = await axios.post('http://localhost:4000/payments/pay',{credit_number:paymentsValues.credit});
+      const { data: payment_status } = await axios.post('http://localhost:4000/payments/pay', { credit_number: paymentsValues.credit });
 
       setPayment(payment_status);
 
       try {
 
-        const {data : order_status} = await axios.post('http://localhost:4000/orders/add',{
+        const { data: order_status } = await axios.post('http://localhost:4000/orders/add', {
           customer_details: {
             customer_name: values.name,
             customer_email: values.email,
@@ -70,7 +66,7 @@ const PurchasePage = () => {
               building: values.building,
             }
           },
-          payment_details:{
+          payment_details: {
             terminal_number: payment.terminal_number,
             transaction_number: payment.transaction_number,
             last_digits: payment.last_digits,
@@ -89,12 +85,12 @@ const PurchasePage = () => {
         // setCartItems([])
         alert(`you order is placed, order number : ${order_status.order_number}`)
 
-          
-        
+
+
       } catch (error) {
         toast.error(error.response.data.error)
       }
-      
+
     } catch (error) {
       toast.error(error.response.data.error)
     }

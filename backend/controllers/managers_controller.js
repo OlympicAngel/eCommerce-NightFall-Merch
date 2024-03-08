@@ -80,12 +80,14 @@ module.exports = {
   updateById: async (req, res) => {
     try {
       const id = req.params.id;
+      if (id == req.manager._id)
+        delete req.body.permission;
 
       //prevent password changing if not specified by user
       if (req.body.password == "" || req.body.password?.length < 4)
         delete req.body.password;
 
-      await MangerModel.findByIdAndUpdate(id, req.body).exec();
+      await MangerModel.findByIdAndUpdate(id, req.body);
 
       return res.status(200).json({
         success: true,
@@ -124,6 +126,8 @@ module.exports = {
   deleteById: async (req, res) => {
     try {
       const id = req.params.id;
+      if (id == req.manager._id)
+        throw new Error("לא ניתן למחוק את עצמך..")
 
       await MangerModel.findByIdAndDelete(id).exec();
 
@@ -229,7 +233,7 @@ module.exports = {
 
       //check that that user has permission
       const manager = await MangerModel.findById(decode.manager).exec();
-      if (!manager || manager.permission <= 1)
+      if (!manager)
         throw new Error("אין לך מספיק גישה בשביל לגשת לפה");
 
       //check that current token is in the allowed tokens of that user (if not that token got logged out)

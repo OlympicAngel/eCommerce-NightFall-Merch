@@ -1,7 +1,7 @@
 import ProductCard from "../../../components/partials/products/ProductCard";
 import axios from "axios";
 import { Box, Heading, Text, Flex } from "@chakra-ui/react";
-import { useQuery } from "react-query";
+import { useQuery } from '@tanstack/react-query';
 import { useContext } from "react";
 import { AuthContext } from "../../../context/AuthProvider";
 

@@ -1,6 +1,6 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../context/AuthProvider"
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { toastError } from "../utils/toast.helper";
 import { useToast } from "@chakra-ui/react";
@@ -8,8 +8,9 @@ import { useToast } from "@chakra-ui/react";
 function useAuth() {
     const { setIsAuth, SERVER, setManager } = useContext(AuthContext);
     const toast = useToast();
+    const [isLoading, setIsLoading] = useState(true)
 
-    const { isSuccess, isLoading } = useQuery({
+    const { isSuccess } = useQuery({
         queryKey: ["auth"],
         queryFn: async () => await axios.get(SERVER + "users/managers/auth", { withCredentials: true }),
         //prevent any form of refetch
@@ -19,13 +20,15 @@ function useAuth() {
         retry: false,
         select: (res) => res.data.manager, //filter response data
         onSuccess: (manager) => {
-            setIsAuth(true)
             setManager(manager) //save manager details
+            setIsAuth(true)
+            setIsLoading(false)
         },
         onError: (e) => {
             setIsAuth(false)
             if (e.response.data.timeout)
                 toastError(e, toast)
+            setIsLoading(false)
         }
     })
 
