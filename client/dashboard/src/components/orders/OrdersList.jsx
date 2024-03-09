@@ -63,7 +63,7 @@ function OrdersList({ orders = [], isLoading }) {
                         {filteredOrders.map((order, index) => <OrderRow id={index} key={order._id} {...{ order, index, addAccordionIndex, setFullview }} />)}
                     </Accordion>
                 </>}
-            <OrderFullview {...{ order: fullview, setFullview }} />
+            <OrderFullview {...{ order: fullview, handleClose: setFullview }} />
         </>
     )
 }

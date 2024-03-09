@@ -224,7 +224,7 @@ module.exports = {
         const user = await UserModel.findById(id).populate([
           //"cart",
           "orders.order",
-        ]);
+        ]).exec();
 
         return res.status(200).json({
           success: true,
@@ -242,10 +242,7 @@ module.exports = {
     //get all users
     getAll: async (req, res) => {
       try {
-        const users = await UserModel.find().populate([
-          //"cart",
-          "orders.order",
-        ]);
+        const users = await UserModel.find();
 
         users.forEach(u => {
           u.password = undefined;

@@ -13,8 +13,6 @@ function Order() {
         select: res => res.data
     });
 
-    console.log(data)
-
     return (
         <Card w="100%" p={["0.5em", "1em"]} boxShadow="2xl" bg="black.100">
             <OrdersList {...{ orders: data?.orders, isLoading }}></OrdersList>

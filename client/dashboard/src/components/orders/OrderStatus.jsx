@@ -5,12 +5,8 @@ import { MdError } from "react-icons/md"
 
 function OrderStatus({ status, onChange = () => { } }) {
     status = status - 1;
-    const steps = [
-        { title: 'הזמנה חדשה', description: 'מחכה לאישור' },
-        { title: 'במשלוח', description: 'ההזמנה בדרך :)' },
-        { title: 'הזמנה בוצעה', description: 'משלוח הגיעה ללקוח' },
-        { title: 'בוטל', description: 'ההזמנה בוטלה', icon: <MdError size={"2em"} color="red" /> },
-    ]
+    const steps = orderStatusSteps
+
     const { activeStep, setActiveStep } = useSteps({
         index: status,
         count: steps.length,
@@ -44,3 +40,10 @@ function OrderStatus({ status, onChange = () => { } }) {
     )
 }
 export default OrderStatus
+
+export const orderStatusSteps = [
+    { title: 'הזמנה חדשה', description: 'מחכה לאישור' },
+    { title: 'הזמנה במשלוח', description: 'ההזמנה בדרך :)' },
+    { title: ' בוצעה', description: 'משלוח הגיעה ללקוח' },
+    { title: 'הזמנה בוטלה', description: 'ההזמנה בוטלה ולא תישלח', icon: <MdError size={"2em"} color="red" /> },
+]

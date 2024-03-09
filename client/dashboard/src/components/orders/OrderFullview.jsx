@@ -1,40 +1,41 @@
-import { Box, Button, Divider, Flex, Heading, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Divider, Flex, Heading, Spacer, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure } from "@chakra-ui/react"
 import Dialog from "../partial/Dialog"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import useMutationLogic from "../../hooks/useMutationLogic"
+import { useNavigate } from "react-router-dom";
+import UserFullview from "../users/normal/UserFullview";
 
 
 
-function OrderFullview({ order, setFullview }) {
-    if (!order)
-        return;
-
+function OrderFullview({ order, handleClose }) {
     //delete method
     const deleteOrder = useMutationLogic({
         "method": "delete",
-        "onSuccess": () => { setFullview() },
+        "onSuccess": () => { handleClose && handleClose() },
         "relatedQuery": "orders",
-        "urlPath": `orders/manage/${order._id}`
+        "urlPath": `orders/manage/${order?._id}`
     })
+
+    const [user2View, setUser2View] = useState()
 
     //simplified object access
     const payment = order?.payment_details, customer = order?.customer_details
 
     //model controller
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const closer = () => {
-        onClose();
-        setFullview();
-    }
+    const closer = () => { onClose(); handleClose(); }
     //open when we get an order
     useEffect(() => {
         if (order)
             onOpen();
     }, [order])
 
-    const header = <Heading as='h1' display={"inline-block"}>פרטי הזמנה: {order?._id}</Heading>;
-    return (
-        <Dialog {...{ isOpen, onOpen, onClose: closer, config: { w: "80vw", onConfirm: console.log, cancel: null, action: "סגור", header } }} >
+    if (!order)
+        return;
+
+    const header = <Text display={"inline-block"}>פרטי הזמנה: {order?._id}</Text>;
+    return (<>
+        <Dialog {...{ isOpen, onOpen, onClose: closer, config: { w: "80vw", cancel: null, action: "סגור", header } }} >
             <Box shadow={"xl"} borderWidth='1px' borderRadius='lg' pt={2} pb={2}>
                 <Heading ms={5} as='h1' size='lg' noOfLines={1}>מוצרים:</Heading>
                 <TableContainer>
@@ -64,7 +65,12 @@ function OrderFullview({ order, setFullview }) {
             <Divider mt={5} mb={5}></Divider>
             <Box as={Flex} gap={5} flexDir={["column", "column", "column", "column", "row"]}>
                 <Box shadow={"xl"} borderWidth='1px' borderRadius='lg' pt={2} pb={2} flex={1}>
-                    <Heading ms={5} as='h2' size='lg' noOfLines={1}>פרטי קונה:</Heading>
+                    <Heading ms={5} as={Flex} size='lg'>
+                        פרטי קונה:
+                        <Spacer />
+                        {order.user &&
+                            order.user._id && <Button me={"0.5em"} colorScheme="green" onClick={() => { setUser2View(order.user); onClose() }}>הצג משתמש</Button>}
+                    </Heading>
                     <Table size={["sm", "md", "lg"]}>
                         <Thead>
                             <Tr>
@@ -107,8 +113,11 @@ function OrderFullview({ order, setFullview }) {
                     </Table>
                 </Box>
             </Box>
-            <Button onClick={() => deleteOrder.mutate()} mt="5" p={"0.2em 1em"} h={"auto"} colorScheme="red" bg={"red.500"} color={"orange.100"} fontSize={"1em"}>מחק הזמנה</Button>
+            <Button onClick={() => deleteOrder.mutate()} mt="5" p={"0.2em 1em"} h={"auto"} colorScheme="red"
+                bg={"red.500"} color={"orange.100"} fontSize={"1em"} isLoading={deleteOrder.isLoading}>מחק הזמנה</Button>
         </Dialog>
+        {user2View && <UserFullview userID={user2View?._id} close={() => { setUser2View(); onOpen() }}></UserFullview>}
+    </>
     )
 }
 export default OrderFullview
