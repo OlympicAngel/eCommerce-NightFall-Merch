@@ -7,12 +7,15 @@ import {
 } from '@tanstack/react-query'
 import { ChakraProvider } from "@chakra-ui/react";
 import AuthProvider from "./context/AuthProvider";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import theme from './theme.js'
+import "./style.css"
+
 
 const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <ChakraProvider>
+  <ChakraProvider theme={theme}>
     <AuthProvider>
       <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT, "currency": "ILS" }}>
         <QueryClientProvider client={queryClient}>

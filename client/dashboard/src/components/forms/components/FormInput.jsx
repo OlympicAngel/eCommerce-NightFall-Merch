@@ -1,10 +1,8 @@
 import { AiFillPhone } from "react-icons/ai";
 import { AiOutlineFieldNumber } from "react-icons/ai";
-import { AiOutlineNumber } from "react-icons/ai";
 import { FaUpload } from "react-icons/fa";
-import { BiCloudUpload } from "react-icons/bi";
 import { MdEmail } from "react-icons/md";
-import { FormControl, FormErrorMessage, FormLabel, Input, InputGroup, InputRightElement } from "@chakra-ui/react"
+import { FormControl, FormErrorMessage, FormLabel, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
 import FormPassword from "./FormPassword";
 import { Field, useField } from "formik";
 import { useState } from "react";

@@ -3,7 +3,7 @@ import { Badge, Button, Flex, Table, TableContainer, Tbody, Td, Tfoot, Th, Thead
 import { ManagerBadge } from "../../partial/LoggedAdminFooter";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../../context/AuthProvider";
-import { ManagerDialog } from "./ManagerUsers";
+import { ManagerDialog } from "./Managers";
 import { AiOutlineEdit } from "react-icons/ai";
 import { BsFillTrashFill } from "react-icons/bs";
 import useMutationLogic from "../../../hooks/useMutationLogic";

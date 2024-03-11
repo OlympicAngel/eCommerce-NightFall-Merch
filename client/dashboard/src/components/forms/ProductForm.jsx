@@ -35,7 +35,10 @@ function ProductForm({ product = {}, method = "post", closeDialog, btnText = "ה
         reader.onload = function (e) {
             setImage(e.target.result)
         }
-        reader.readAsDataURL(input.files[0]);
+        if (input.files[0])
+            reader.readAsDataURL(input.files[0]);
+        else
+            setImage()
     }
 
     return (
@@ -46,7 +49,7 @@ function ProductForm({ product = {}, method = "post", closeDialog, btnText = "ה
                 price: yup.number().required("חייב להזין מחיר כלשהו").min(0, "מחיר לא יכול להיות שלילי"),
                 category: yup.string().required("חייב לבחור קטגוריה")
             })}
-            onSubmit={(values, actions) => { mutation.mutate(values); console.log(values) }}>
+            onSubmit={(values, actions) => { mutation.mutate(values); }}>
             <Container as={Form} p="1em" ref={formRef}>
                 <Flex gap="1em">
                     <FormInput placeholder={"שם"} name="name" isRequired={true} min="1" />

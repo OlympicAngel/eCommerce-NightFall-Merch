@@ -4,45 +4,11 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 
 function About() {
 
-  function createOrder(data, actions) {
-    console.log(data, actions)
-    return actions.order.create({
-      intent: "CAPTURE",
-      purchase_units: [
-        {
-          description: "test",
-          items: [
-            //TODO: convert cart to paypal form
-            {
-              name: "a",
-              quantity: 10,
-              unit_amount: {
-                currency_code: "ILS",
-                value: 1,
-              }
-            }
-          ],
-          amount: {
-            currency_code: "ILS",
-            value: 10.0, //TODO total
-            breakdown: {
-              item_total: {
-                currency_code: "ILS",
-                value: 10, //TODO total
-              }
-            }
-          }
-        }
-      ]
-    })
-  }
+
 
 
   return (
     <Box maxW="800px" mx="auto" py={10} px={4}>
-      <Box m={"auto"} textAlign={"center"} >
-        <PayPalButtons createOrder={createOrder} style={{ layout: "horizontal" }} />
-      </Box>
 
       <Heading as="h2" size="xl" mb={6}>
         About Us

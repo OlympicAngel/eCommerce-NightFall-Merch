@@ -1,6 +1,11 @@
 let MangerModel = require(`../models/Manager`);
+let OtpModel = require(`../models/Otp`);
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const otpGenerator = require('otp-generator');
+const { userResetPassword } = require("../utils/email");
+
 const managerTokenDuration = 1000 * 60 * 60 * 2; //2H
 
 
@@ -212,6 +217,94 @@ module.exports = {
         message: "שגיאה בהתנתקות..",
         error: error.message,
       });
+    }
+  },
+
+  reqResetPassword: async (req, res) => {
+    let timeLeft;
+    try {
+      const { email } = req.body;
+      if (!email)
+        throw new Error("לא הוזן אימייל")
+
+      const manager = await MangerModel.findOne({ email });
+      if (!manager)
+        throw new Error("אמייל לא קיים במערכת");
+
+      const olderOtp = await OtpModel.findOne({ email });
+      if (olderOtp) {
+        timeLeft = 5 * 60 - (Date.now() - olderOtp.createdAt) / 1000;
+        throw new Error("בקשת איפוס כבר נשלחה כבר למייל שלך, יש לבדוק במייל..");
+      }
+
+      //gen rnd otp
+      let otp;
+      let result = true
+      //cycle until we get an otp that is NOT in out DB
+      while (result) {
+        otp = otpGenerator.generate(6, { "specialChars": false });
+        result = await OtpModel.findOne({ otp: otp });
+      }
+
+      //send email
+      userResetPassword(manager.name, email, otp)
+
+
+      //create new otp
+      const otpObj = OtpModel({
+        email,
+        otp,
+        userType: "manager"
+      })
+      otpObj.save();
+
+      res.status(201).json({
+        success: true,
+        email,
+        message: "קוד איפוס סיסמה נשלח למייל בהצלחה!",
+      })
+
+    } catch (e) {
+      return res.status(401).json({
+        message: "פעולה נכשלה",
+        error: e.message,
+        timeLeft
+      })
+    }
+  },
+
+  useResetPin: async (req, res) => {
+    try {
+      const { otp, password } = req.body;
+      if (!otp)
+        throw new Error("לא הוזן קוד איפוס")
+      if (!password)
+        throw new Error("לא הוזנה סיסמה חדשה לאיפוס")
+
+      //get otp and delete after 
+      const otpObj = await OtpModel.findOneAndDelete({ otp, userType: "manager" });
+      if (!otpObj)
+        throw new Error("קוד איפוס לא תקין או פג תוקף")
+
+      //get that manager
+      const manager = await MangerModel.findOne({ email: otpObj.email })
+      if (!manager)
+        throw new Error("המשתמש שמקושר לקוד הזה לא קיים יותר")
+
+      //update the password
+      manager.password = password;
+      await manager.save();
+
+      res.status(201).json({
+        success: true,
+        message: "סיסמה אופסה ועודכנה בהצלחה!"
+      })
+
+    } catch (e) {
+      return res.status(401).json({
+        message: "פעולה נכשלה",
+        error: e.message
+      })
     }
   },
 

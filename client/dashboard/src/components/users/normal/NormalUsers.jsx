@@ -10,11 +10,16 @@ import Error from "../../partial/Error";
 import { Flex, useDisclosure } from "@chakra-ui/react";
 import Dialog from "../../partial/Dialog";
 import UserForm from "../../forms/UserForm";
+import useTitle from "../../../hooks/useTitle";
 
 
 function NormalUsers() {
+    useTitle("משתמשים")
+
+
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [editUser, setEditUser] = useState();
+
     //when setting user - open edit view
     useEffect(() => {
         if (editUser && !isOpen)

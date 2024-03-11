@@ -2,8 +2,9 @@ import { BsPersonFillGear } from "react-icons/bs";
 import { FaUsers } from "react-icons/fa";
 import { Card, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue } from "@chakra-ui/react";
 import NormalUsers from "../components/users/normal/NormalUsers";
-import ManagerUsers from "../components/users/managers/ManagerUsers";
+import Managers from "../components/users/managers/Managers";
 import { useState } from "react";
+import useTitle from "../hooks/useTitle";
 
 function Users() {
     const colors = useColorModeValue(
@@ -24,7 +25,7 @@ function Users() {
                         <NormalUsers />
                     </TabPanel>
                     <TabPanel p={[1, "1em"]}>
-                        <ManagerUsers />
+                        <Managers />
                     </TabPanel>
                 </TabPanels>
             </Tabs>

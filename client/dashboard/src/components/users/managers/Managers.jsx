@@ -11,8 +11,9 @@ import useQueryLogic from "../../../hooks/useQueryLogic";
 import Loader from "../../partial/Loader";
 import Error from "../../partial/Error";
 
-function ManagerUsers() {
-    const { SERVER } = useContext(AuthContext)
+function Managers() {
+    useTitle("מנהלים")
+
     const [openManagerDialog, setOpenManagerDialog] = useState(false);
 
     //get data
@@ -45,7 +46,7 @@ function ManagerUsers() {
         </Flex>
     )
 }
-export default ManagerUsers
+export default Managers
 
 export function ManagerDialog({ manager, open, setClose }) {
     const { isOpen, onOpen, onClose } = useDisclosure();

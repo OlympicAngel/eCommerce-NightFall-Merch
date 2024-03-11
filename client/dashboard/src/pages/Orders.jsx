@@ -4,8 +4,11 @@ import { Card } from "@chakra-ui/react"
 import useQueryLogic from "../hooks/useQueryLogic"
 import Error from "../components/partial/Error";
 import Pagination, { usePaginationLogic } from "../components/Sorters&Filters/Pagination";
+import useTitle from "../hooks/useTitle";
 
 function Order() {
+    useTitle("תצוגת הזמנות")
+
     const paginationLogic = usePaginationLogic()
     let { isLoading, data, error } = useQueryLogic({
         "key": ["orders", paginationLogic.itemsPerPages, paginationLogic.cPage],

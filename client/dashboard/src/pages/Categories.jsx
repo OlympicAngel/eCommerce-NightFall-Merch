@@ -2,8 +2,11 @@ import { Card } from "@chakra-ui/react"
 import CategoriesTable from "../components/categories/CategoriesTable"
 import useQueryLogic from "../hooks/useQueryLogic";
 import Error from "../components/partial/Error";
+import useTitle from "../hooks/useTitle";
 
 function Categories() {
+    useTitle("קטגוריות מוצרים")
+
     const { isLoading, data, error } = useQueryLogic({ "key": "categories", "urlPath": "categories" });
 
     return (
