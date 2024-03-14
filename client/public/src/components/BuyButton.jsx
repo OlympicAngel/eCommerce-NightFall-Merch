@@ -31,7 +31,8 @@ function BuyButton({ items }) {
     const createOrder = genOrder(paypalItems)
     //https://paypal.github.io/react-paypal-js/?path=/story/example-paypalbuttons--default&args=showSpinner:true
     return (
-        <Box m={"auto"} textAlign={"center"}>
+        <Box m={"0.5em auto"} textAlign={"center"} style={{ colorScheme: "light" }} bg="paypalBG" p="1em" pb="0" borderRadius={"0.4em"}
+            border="solid 0.15em" borderColor="orange.300" boxShadow={"dark-lg"} w={"inherit"} maxW={"min(100%,600px)"}>
             <PayPalButtons
                 createOrder={createOrder}
                 onApprove={onApprove}
@@ -44,7 +45,8 @@ function BuyButton({ items }) {
                     layout: "vertical",
                     maxWidth: "100%",
                     showSpinner: true,
-                    disableMaxWidth: true
+                    disableMaxWidth: true,
+                    background: "red"
                 }} />
         </Box>
     )

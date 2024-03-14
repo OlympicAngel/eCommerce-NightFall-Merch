@@ -1,3 +1,8 @@
+import { MdContactSupport } from "react-icons/md";
+import { HiInformationCircle } from "react-icons/hi";
+import { MdOutlineContactSupport } from "react-icons/md";
+import { MdSell } from "react-icons/md";
+import { GiSolarTime } from "react-icons/gi";
 import { HiUsers } from "react-icons/hi";
 import { TbTableOptions } from "react-icons/tb";
 import { BsCardChecklist } from "react-icons/bs";
@@ -46,7 +51,7 @@ export default function Nav() {
 
     return (<>
         <Box onClick={closeMenu} display={["block", "none"]} position={"absolute"} inset="0" zIndex={1} backdropFilter={"blur(0.2em)"}
-            opacity={isOpen ? 1 : 0} pointerEvents={isOpen ? "all" : "none"} transition={"opacity 0.3s"} transitionDelay={(~~!isOpen) * 0.15 + "s"}
+            opacity={isOpen ? 1 : 0} pointerEvents={isOpen ? "all" : "none"} transition={"opacity 0.3s"} transitionDelay={(~~!isOpen) * 0.2 + "s"}
             cursor={"no-drop"} _after={{ content: '""', inset: 0, bg: "purple.900", position: "absolute", opacity: 0.5 }} >
         </Box>
 
@@ -61,14 +66,14 @@ export default function Nav() {
                 overflow={"hidden"}
                 mt={["0.5em", 0]}
                 maxHeight={isOpen ? [menuH || "initial", "initial"] : [0, "initial"]} pointerEvents={isOpen ? ["all", "all"] : ["none", "all"]}
-                transition={"max-height 0.3s"} transitionDelay={(~~!isOpen) * 0.15 + "s"}
+                transition={"max-height 0.3s"} transitionDelay={(~~!isOpen) * 0.2 + "s"}
             >
 
-                <MenuItem to="/" icon={<AiFillHome />} {...{ closeMenu }}> ראשי</MenuItem>
-                <MenuItem to="/orders" icon={<BsCardChecklist />} {...{ closeMenu }}>  הזמנות</MenuItem>
-                <MenuItem to="/products" icon={<AiFillShop />} {...{ closeMenu }}> מוצרים</MenuItem>
-                <MenuItem to="/categories" icon={<TbTableOptions />} {...{ closeMenu }}> קטגוריות</MenuItem>
-                <MenuItem to="/users" icon={<HiUsers />} {...{ closeMenu }}> משתמשים</MenuItem>
+                <MenuItem to="/" icon={<AiFillHome size={"1.2em"} />} {...{ closeMenu }}> ראשי</MenuItem>
+                <MenuItem to="/orders" icon={<GiSolarTime size={"1.6em"} />} {...{ closeMenu }}>  חדש</MenuItem>
+                <MenuItem to="/products" icon={<MdSell size={"1.2em"} />} {...{ closeMenu }}> הכי נמכר</MenuItem>
+                <MenuItem to="/categories" icon={<MdContactSupport size={"1.2em"} />} {...{ closeMenu }}> צור קשר</MenuItem>
+                <MenuItem to="/users" icon={<HiInformationCircle size={"1.2em"} />} {...{ closeMenu }}> עליינו</MenuItem>
 
                 <Spacer display={["none", "block"]} minH={"1em"} />
                 <Flex gap={"0.5em"} mt={["1em", 0]} justifyContent={"left"}>
@@ -118,16 +123,19 @@ function MenuItem({ children, to, icon, closeMenu }) {
     const active = {
         color: "gold",
         fontWeight: 900,
-        background: "black"
+        background: "black",
+        svg: {
+            color: "red"
+        }
     };
 
     return <Link style={({ isActive }) => isActive ? active : {}}
-        borderRadius={"0.5em"} transition={"0.3s background: "}
+        borderRadius={"0.5em"} transition={"0.3s background, 0.3s color"}
         color="high.blue" fontWeight={900}
-        as={NavLink} to={to} onClick={closeMenu} p="0 0.5em">
+        as={NavLink} to={to} onClick={closeMenu} p="0.2em 0.5em">
         <HStack>
             {icon}
-            <Text>
+            <Text whiteSpace={"nowrap"}>
                 {children}
             </Text>
         </HStack>
