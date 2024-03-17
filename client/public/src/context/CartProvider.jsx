@@ -1,9 +1,8 @@
 import { useState } from "react"
 import { useEffect } from "react"
 import { createContext } from "react"
-import { useContext } from "react"
 
-export const CardContext = createContext()
+export const CartContext = createContext()
 
 function CartProvider({ children }) {
 
@@ -59,22 +58,29 @@ function CartProvider({ children }) {
     setCart(cartItems.filter(p => p.product != product._id))
   }
   //calculate item count
-  function getCartItems() {
+  function getItemsCount() {
     return cartItems.reduce((preVal, p) => preVal + p.quantity, 0)
   }
+
+  //calculate cart worth
+  function getCartPrice() {
+    return cartItems.reduce((preVal, p) => preVal + p.quantity * p.ref.price, 0)
+  }
+
 
   const data = {
     cartItems,
     addToCart,
     removeFromCart,
     deleteFromCart,
-    resetCart: () => { setCart = [] },
-    getCartItems,
+    resetCart: () => { setCart([]) },
+    getItemsCount,
+    getCartPrice
   }
   return (
-    <CardContext.Provider value={data}>
+    <CartContext.Provider value={data}>
       {children}
-    </CardContext.Provider>
+    </CartContext.Provider>
   )
 }
 export default CartProvider
