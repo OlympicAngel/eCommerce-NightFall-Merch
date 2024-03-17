@@ -26,8 +26,10 @@ function useAuth() {
         },
         onError: (e) => {
             setIsAuth(false)
-            if (e.response.data.timeout)
+            if (e.response?.data.timeout)
                 toastError(e, toast)
+            else if (e.code == "ERR_NETWORK")
+                toastError(new Error("שגיאה בתקשורת עם השרת"), toast)
             setIsLoading(false)
         }
     })
