@@ -1,11 +1,9 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
-import { useToast } from "@chakra-ui/react";
 import useMutationLogic from "./useMutationLogic";
 
 function useLogout() {
-    const { SERVER, setIsAuth } = useContext(AuthContext)
-    const toast = useToast();
+    const { setIsAuth } = useContext(AuthContext)
 
     //create an mutate function that when called it will trigger a logout request
     const { isSuccess, mutate } = useMutationLogic({

@@ -11,6 +11,7 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import theme from './theme.js'
 import "./style.css"
 import CartProvider from "./context/CartProvider.jsx";
+import RealTimeData from "./context/RealTimeData.jsx";
 
 
 const queryClient = new QueryClient()
@@ -18,13 +19,15 @@ const queryClient = new QueryClient()
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ChakraProvider theme={theme}>
     <AuthProvider>
-      <CartProvider>
-        <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT, "currency": "ILS" }}>
-          <QueryClientProvider client={queryClient}>
-            <App />
-          </QueryClientProvider>
-        </PayPalScriptProvider>
-      </CartProvider>
+      <RealTimeData>
+        <CartProvider>
+          <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT, "currency": "ILS" }}>
+            <QueryClientProvider client={queryClient}>
+              <App />
+            </QueryClientProvider>
+          </PayPalScriptProvider>
+        </CartProvider>
+      </RealTimeData>
     </AuthProvider>
   </ChakraProvider>
 );

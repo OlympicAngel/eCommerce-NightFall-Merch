@@ -3,10 +3,9 @@ import { createContext, useState } from 'react';
 export const AuthContext = createContext();
 
 function AuthProvider({ children }) {
-
     const [isAuth, setIsAuth] = useState(false)
     const [user, setUser] = useState(false)
-    const SERVER = "http://localhost:4000/"
+    const SERVER = import.meta.env.VITE_SERVER || "http://localhost:4000/"
     const data = {
         isAuth, setIsAuth,
         user, setUser,

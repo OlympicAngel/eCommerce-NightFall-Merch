@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getDatabase } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -9,6 +9,7 @@ import { getAuth } from "firebase/auth";
 const firebaseConfig = {
     apiKey: "AIzaSyBSUUjeEuPI47YpKPzD6Envy-tI1ZZhf-Y",
     authDomain: "nightfall-merch.firebaseapp.com",
+    databaseURL: "https://nightfall-merch-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "nightfall-merch",
     storageBucket: "nightfall-merch.appspot.com",
     messagingSenderId: "404887784388",
@@ -18,4 +19,4 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app)
+export const rtDB = getDatabase(app)
