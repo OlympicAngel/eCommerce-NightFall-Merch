@@ -8,8 +8,8 @@ export function toastSuccess(title, toast) {
 }
 
 export function toastError(e, toast) {
-    let title = e.response.data.message || e.message,
-        desc = e.response.data.error;
+    let title = e.response?.data.message || e.message,
+        desc = e.response?.data.error;
     toast({
         title: title,
         description: desc,

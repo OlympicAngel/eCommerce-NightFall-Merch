@@ -1,12 +1,15 @@
 import { useState } from "react"
 import { useEffect } from "react"
 import { createContext } from "react"
+import { CartItem } from "../utils/types"
 
 export const CartContext = createContext()
 
 function CartProvider({ children }) {
-
+  /** @type {[CartItem[],Function]} */
   const [cartItems, setCart] = useState([])
+
+
 
   //attemp load cart from local storage
   useEffect(() => {
@@ -16,6 +19,7 @@ function CartProvider({ children }) {
     } catch (e) { }
   }, [])
 
+  //save to local storage
   useEffect(() => {
     localStorage.cartItems = JSON.stringify(cartItems)
   }, [cartItems])
@@ -67,6 +71,15 @@ function CartProvider({ children }) {
     return cartItems.reduce((preVal, p) => preVal + p.quantity * p.ref.price, 0)
   }
 
+  /**
+   * @returns {CartItem[]}
+   */
+  function simplifyCart() {
+    return cartItems.map((item) => {
+      const { product, quantity } = item;
+      return { product, quantity }
+    });
+  }
 
   const data = {
     cartItems,
@@ -75,7 +88,8 @@ function CartProvider({ children }) {
     deleteFromCart,
     resetCart: () => { setCart([]) },
     getItemsCount,
-    getCartPrice
+    getCartPrice,
+    simplifyCart
   }
   return (
     <CartContext.Provider value={data}>

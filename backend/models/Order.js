@@ -8,67 +8,51 @@ const order_schema = new Schema({
 		ref: "users",
 	},
 
-	customer_details: {
-		customer_name: {
-			type: String,
-			required: true,
-		},
-		customer_email: {
-			type: String,
-			required: true,
-		},
-		customer_phone: {
-			type: String,
-			match: /^([0]\d{1,3}[-])?\d{7,10}$/,
-			required: true,
-		},
-		customer_address: {
+	//this is not required as this data might not be available if a guest sends the request 
+	customer: {
+		name: String,
+		email: String,
+		phone: String,
+		address: {
 			city: {
 				type: String,
-				trim: true,
-				required: true,
+				trim: true
 			},
 			street: {
 				type: String,
-				trim: true,
-				required: true,
+				trim: true
 			},
 			building: {
 				type: String,
-				trim: true,
-				required: true,
+				trim: true
 			},
 		},
 	},
 
+	//will be sets on save
 	total_price: {
 		type: Number,
 		min: 1,
 	},
 
-	payment_details: {
-		terminal_number: {
+	payment: {
+		paypal_id: {
 			type: String,
-			required: true,
-			match: /^[0-9]+$/,
+			match: /^[a-zA-Z0-9]+$/,
+			unique: true,
+			sparse: true //allow null
 		},
+
+		paypal_fee: Number,
 
 		transaction_number: {
 			type: String,
-			required: true,
-			match: /^[0-9]+$/,
-			unique: true,
+			match: /^[a-zA-Z0-9]+$/,
 		},
 
-		transaction_date: {
+		date: {
 			type: Date,
 			default: Date.now(),
-		},
-
-		last_digits: {
-			type: String,
-			required: true,
-			match: /^[0-9]+$/,
 		},
 	},
 
@@ -96,7 +80,7 @@ const order_schema = new Schema({
 		type: Number,
 		default: 1,
 		min: [1, "minimum is 1"],
-		max: [4, "maximum is 4"],
+		max: [5, "maximum is 5"],
 	},
 
 	created_at: {
@@ -106,12 +90,11 @@ const order_schema = new Schema({
 		},
 	},
 
-	order_number: {
-		type: Number,
-		default: function () {
-			return Date.now();
-		},
-	},
+	expireAt: {
+		type: Date,
+		default: Date.now(),
+		expires: 60 * 60 * 24 * 3 // delete order after 3 days
+	}
 });
 
 order_schema.pre("save", function (next) {

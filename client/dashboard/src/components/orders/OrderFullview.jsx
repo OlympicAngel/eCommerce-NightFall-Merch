@@ -19,7 +19,7 @@ function OrderFullview({ order, handleClose }) {
     const [user2View, setUser2View] = useState()
 
     //simplified object access
-    const payment = order?.payment_details, customer = order?.customer_details
+    const payment = order?.payment, customer = order?.customer
 
     //model controller
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -82,10 +82,10 @@ function OrderFullview({ order, handleClose }) {
                         </Thead>
                         <Tbody>
                             <Tr background={"gray.600"}>
-                                <Td>{customer.customer_name}</Td>
-                                <Td>{customer.customer_phone}</Td>
-                                <Td>{customer.customer_address.city}</Td>
-                                <Td>{customer.customer_address.street} {customer.customer_address.building}</Td>
+                                <Td>{customer.name}</Td>
+                                <Td>{customer.phone}</Td>
+                                <Td>{customer.address.city}</Td>
+                                <Td>{customer.address.street} {customer.building}</Td>
                             </Tr>
                         </Tbody>
                     </Table>
@@ -105,8 +105,8 @@ function OrderFullview({ order, handleClose }) {
                         <Tbody>
                             <Tr background={"gray.600"}>
                                 <Td>{payment.transaction_number}</Td>
-                                <Td>{new Date(payment.transaction_date).toLocaleString("he-il", { "dateStyle": "medium", "timeStyle": "short" })}</Td>
-                                <Td>{payment.terminal_number}</Td>
+                                <Td>{new Date(payment.date).toLocaleString("he-il", { "dateStyle": "medium", "timeStyle": "short" })}</Td>
+                                <Td>{payment.paypal_id}</Td>
                                 <Td>XXXX-XXXX-{payment.last_digits}</Td>
                             </Tr>
                         </Tbody>

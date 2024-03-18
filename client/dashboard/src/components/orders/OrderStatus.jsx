@@ -42,7 +42,8 @@ function OrderStatus({ status, onChange = () => { } }) {
 export default OrderStatus
 
 export const orderStatusSteps = [
-    { title: 'הזמנה חדשה', description: 'מחכה לאישור' },
+    { title: 'הזמנה זמנית', description: 'מחכה לתשלום' },
+    { title: 'הזמנה במערכת', description: 'מחכה לאישור' },
     { title: 'הזמנה במשלוח', description: 'ההזמנה בדרך :)' },
     { title: ' בוצעה', description: 'משלוח הגיעה ללקוח' },
     { title: 'הזמנה בוטלה', description: 'ההזמנה בוטלה ולא תישלח', icon: <MdError size={"2em"} color="red" /> },

@@ -34,7 +34,7 @@ const User = new Schema({
             trim: true,
             required: true
         },
-        apartment: {
+        building: {
             type: String,
             trim: true
         },

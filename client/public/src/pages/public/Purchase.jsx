@@ -56,18 +56,18 @@ const PurchasePage = () => {
       try {
 
         const { data: order_status } = await axios.post('http://localhost:4000/orders/add', {
-          customer_details: {
-            customer_name: values.name,
-            customer_email: values.email,
-            customer_phone: values.phone,
-            customer_address: {
+          customer: {
+            name: values.name,
+            email: values.email,
+            phone: values.phone,
+            address: {
               city: values.city,
               street: values.street,
               building: values.building,
             }
           },
-          payment_details: {
-            terminal_number: payment.terminal_number,
+          payment: {
+            paypal_id: payment.paypal_id,
             transaction_number: payment.transaction_number,
             last_digits: payment.last_digits,
           },

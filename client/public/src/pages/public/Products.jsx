@@ -3,9 +3,14 @@ import { Box, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, Divid
 import useQueryLogic from "../../hooks/useQueryLogic";
 import { useContext } from "react";
 import { CartContext } from "../../context/CartProvider";
+import { set, ref, update } from "firebase/database"
+import { rtDB } from "../../../firebase.config";
+import useTitle from "../../hooks/useTitle";
 
 
 function Products() {
+  useTitle("ראשי")
+
   const queryLogic = useQueryLogic({
     key: "products",
     urlPath: "products",
@@ -26,4 +31,5 @@ function Products() {
   </>
   )
 }
+
 export default Products

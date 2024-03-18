@@ -2,22 +2,21 @@ const OrderModel = require(`../models/Order`);
 
 module.exports = {
 
-    //TODO: logic for new orders for users & guests
     addNewOrderForGuest: async (req, res) => {
         try {
             console.log(req.body)
             // gettind values from the body request
             const {
-                payment_details,
+                payment,
                 products,
-                customer_details
+                customer
             } = req.body;
 
             // creating OrderModel using the values from req.body
             const new_Order = OrderModel({
-                payment_details,
+                payment,
                 products,
-                customer_details
+                customer
             });
 
             // actual saving
@@ -39,13 +38,13 @@ module.exports = {
     add: async (req, res) => {
         try {
             // gettind values from the body request
-            const { user, total_price, payment_details, products } = req.body;
+            const { user, total_price, payment, products } = req.body;
 
             // creating OrderModel using the values from req.body
             const new_Order = OrderModel({
                 user,
                 total_price,
-                payment_details,
+                payment,
                 products
             });
 
@@ -68,10 +67,33 @@ module.exports = {
     guests: {
         //get order by id ONLY IF it doesnt have user associated with it (to prevent privacy leak)
         getByID: async (req, res) => {
+            function censorWord(str) {
+                if (!str)
+                    return;
+                const mid = ~~(str.length / 2.2);
+                return str.slice(0, mid - 1) + "*".repeat(str.length - mid) + str.slice(-1);
+            }
+
+            function censorEmail(email = "") {
+                if (!email || !email.includes("@"))
+                    return censorWord(email);
+                var arr = email.split("@");
+                return censorWord(arr[0]) + "@" + censorWord(arr[1]);
+            }
             try {
                 const id = req.params.id;
                 const order = await OrderModel.find({ id, user: { $exists: false } }).populate(['user', 'products.product']).exec();
-                //TODO: strip all sensitive user data
+                delete order.user;
+
+                //censor user data
+                order.customer.name = censorWord(order.customer.name);
+                order.customer.email = censorEmail(order.customer.email);
+                order.customer.phone = censorWord(order.customer.phone);
+                order.customer.address.street = censorWord(order.customer.address.street);
+                order.payment.paypal_id = censorWord(order.payment.paypal_id);
+                order.payment.transaction_number = censorWord(order.payment.transaction_number);
+                order.payment.last_digits = censorWord(order.last_digits);
+
                 return res.status(200).json({
                     success: true,
                     message: `הזמנה נשלפה בהצלחה`,

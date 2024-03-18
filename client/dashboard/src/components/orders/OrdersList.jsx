@@ -75,7 +75,7 @@ function OrderRow({ order, index, addAccordionIndex, setFullview }) {
         "method": "put",
         "relatedQuery": "orders"
     }).mutate;
-    const customer = order.customer_details;
+    const customer = order.customer;
 
     return <AccordionItem id={order._id} borderTopColor="purple.600" _odd={{ bg: "rgba(0,0,0,0.15)" }} bg="rgba(255,255,255,0.05)" borderRadius={"1em"}>
         {({ isExpanded }) => <>
@@ -84,7 +84,7 @@ function OrderRow({ order, index, addAccordionIndex, setFullview }) {
                 <Box as="span" flex='1' textAlign='right'>
                     <Tag colorScheme={["orange", "blue", "green", "red"][order.status - 1]}>
                         {["חדש", "משלוח", "בוצעה", "בוטל"][order.status - 1]}
-                    </Tag> לקוח: {customer.customer_name}, טלפון: {customer.customer_phone}</Box>
+                    </Tag> לקוח: {customer.name}, טלפון: {customer.phone}</Box>
                 <Box>₪
                     {order.total_price.toLocaleString("he-il")}
                 </Box>
@@ -104,13 +104,13 @@ function OrderRow({ order, index, addAccordionIndex, setFullview }) {
 
 //order summery info
 function OrderInfo({ order }) {
-    const customer = order.customer_details;
+    const customer = order.customer;
 
     return <Flex gap={"1em"} wrap={"wrap"} w="100%">
         <OrderInfoBlock icon={<HiLocationMarker size={"1.5em"} />}>
-            <Text>{customer.customer_name}</Text>
-            <Text>{customer.customer_phone}</Text>
-            <Text>{Object.values(customer.customer_address).join(", ")}</Text>
+            <Text>{customer.name}</Text>
+            <Text>{customer.phone}</Text>
+            <Text>{Object.values(customer.address).join(", ")}</Text>
         </OrderInfoBlock>
 
         <OrderInfoBlock icon={<CgFileDocument size="1.5em" />}>
@@ -163,8 +163,8 @@ function genSortOptions() {
     return [
         new SortBtn("תאריך", (o1, o2) => new Date(o1.created_at) < new Date(o2.created_at) ? 1 : -1),
         new SortBtn("מחיר", (o1, o2) => o1.total_price < o2.total_price ? 1 : -1),
-        new SortBtn("שם", (o1, o2) => o1.customer_details.customer_name < o2.customer_details.customer_name ? 1 : -1),
-        new SortBtn("כתובת", (o1, o2) => o1.customer_details.customer_address.city < o2.customer_details.customer_address.city ? 1 : -1),
+        new SortBtn("שם", (o1, o2) => o1.customer.name < o2.customer.name ? 1 : -1),
+        new SortBtn("כתובת", (o1, o2) => o1.customer.address.city < o2.customer.address.city ? 1 : -1),
         new SortBtn("סטטוס", (o1, o2) => o1.status < o2.status ? 1 : -1),
         new SortBtn("מזהה", (o1, o2) => o1._id < o2._id ? 1 : -1)
     ]
