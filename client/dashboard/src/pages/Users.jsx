@@ -4,7 +4,6 @@ import { Card, Tab, TabList, TabPanel, TabPanels, Tabs, useColorModeValue } from
 import NormalUsers from "../components/users/normal/NormalUsers";
 import Managers from "../components/users/managers/Managers";
 import { useState } from "react";
-import useTitle from "../hooks/useTitle";
 
 function Users() {
     const colors = useColorModeValue(

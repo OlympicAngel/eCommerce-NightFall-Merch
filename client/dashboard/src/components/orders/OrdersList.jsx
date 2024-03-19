@@ -2,8 +2,8 @@ import { ImSad2 } from "react-icons/im";
 import { FaInfoCircle } from "react-icons/fa";
 import { CgFileDocument } from "react-icons/cg";
 import { HiLocationMarker } from "react-icons/hi";
-import { Box, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Divider, Text, Flex, Button, Tag } from "@chakra-ui/react";
-import OrderStatus from "./OrderStatus";
+import { Box, Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Divider, Text, Flex, Button, Tag, useToast } from "@chakra-ui/react";
+import OrderStatus, { orderStatusSteps } from "./OrderStatus";
 import FilterButtons, { FilterBtn } from "../Sorters&Filters/FilterButtons";
 import SortButtons, { SortBtn } from "../Sorters&Filters/SortButtons";
 import OrderFullview from "./OrderFullview";
@@ -11,7 +11,10 @@ import HeaderCRUD from "../partial/HeaderCRUD";
 import Search, { useSearchLogic } from "../Sorters&Filters/SearchList";
 import Loader from "../partial/Loader";
 import useMutationLogic from "../../hooks/useMutationLogic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toastError } from "../../utils/toast.helper";
+import useTitle from "../../hooks/useTitle";
 
 
 function OrdersList({ orders = [], isLoading }) {
@@ -44,8 +47,30 @@ function OrdersList({ orders = [], isLoading }) {
         .filter(searchLogic.filterFn)
         .sort(sortLogic.sortFn)
 
-
     const [fullview, setFullview] = useState();
+    const closeFullview = () => {
+        setFullview();
+        navigate("/orders");
+    }
+
+    //load params from url - to directly show a user
+    const { orderID } = useParams();
+    const navigate = useNavigate();
+    const toast = useToast()
+    useTitle(fullview ? `הזמנה ${orderID}` : "תצוגת הזמנות");
+    useEffect(() => {
+        //if component has not initialized with orders yet - ignore
+        if (!orders.length || !orderID)
+            return;
+
+        const paramOrder = orders.find(o => o._id == orderID);
+        if (!paramOrder) {
+            toastError(new Error(`הזמנה מס' - "${orderID}" לא נמצאה. `), toast)
+            return closeFullview()
+        }
+        setFullview(paramOrder);
+    }, [orderID, orders.length == 0]) //update when param change OR if orders length changes from 0 (initial state)
+
 
     return (
         <>
@@ -60,16 +85,17 @@ function OrdersList({ orders = [], isLoading }) {
                     {orders.length == 0 && <Box textAlign={"center"} as={"i"} color="gray.500"> ~ אין כרגע הזמנות <ImSad2 /> ~</Box>}
                     {filteredOrders.length == 0 && orders.length > 0 && <Box textAlign={"center"} as={"i"} color="gray.500"> ~ אין תוצאות - יש לשנות את סגנון הסינון ~</Box>}
                     <Accordion w="100%" allowMultiple index={accordionIndex}>
-                        {filteredOrders.map((order, index) => <OrderRow id={index} key={order._id} {...{ order, index, addAccordionIndex, setFullview }} />)}
+                        {filteredOrders.map((order, index) => <OrderRow id={index} key={order._id} {...{ order, index, addAccordionIndex }} />)}
                     </Accordion>
                 </>}
-            <OrderFullview {...{ order: fullview, handleClose: setFullview }} />
+            <OrderFullview {...{ order: fullview, handleClose: closeFullview }} />
         </>
     )
 }
 
 //each order row element
-function OrderRow({ order, index, addAccordionIndex, setFullview }) {
+function OrderRow({ order, index, addAccordionIndex }) {
+    const navigate = useNavigate();
     const updateOrder = useMutationLogic({
         "urlPath": `orders/manage/${order._id}/status`,
         "method": "put",
@@ -82,8 +108,8 @@ function OrderRow({ order, index, addAccordionIndex, setFullview }) {
             <AccordionButton onClick={() => addAccordionIndex(index)} p={"1em"} _hover={{ bg: 'gray.600' }} borderRadius={"1em"}
                 {...(isExpanded ? { bg: 'purple.800', color: "purple.100", _hover: { bg: 'purple.600' } } : {})}>
                 <Box as="span" flex='1' textAlign='right'>
-                    <Tag colorScheme={["orange", "blue", "green", "red"][order.status - 1]}>
-                        {["חדש", "משלוח", "בוצעה", "בוטל"][order.status - 1]}
+                    <Tag colorScheme={orderStatusSteps[order.status - 1].color}>
+                        {orderStatusSteps[order.status - 1].title.split(" ").pop()}
                     </Tag> לקוח: {customer.name}, טלפון: {customer.phone}</Box>
                 <Box>₪
                     {order.total_price.toLocaleString("he-il")}
@@ -92,9 +118,12 @@ function OrderRow({ order, index, addAccordionIndex, setFullview }) {
             </AccordionButton>
             <AccordionPanel p={4} direction="ltr" >
                 <OrderInfo order={order} key={order._id} />
-                <Button background={"purple.500"} onClick={() => setFullview(order)}>תצוגה מלאה</Button>
+                <Button background={"purple.500"} onClick={() => navigate("./" + order._id)}>תצוגה מלאה</Button>
                 <Divider mt={"1em"} mb={"1em"} />
-                <OrderStatus status={order.status} onChange={(newState) => updateOrder(newState)} />
+                <OrderStatus status={order.status} onChange={(newState) => {
+                    updateOrder({ status: newState })
+                    window.open(`https://www${import.meta.env.DEV ? ".sandbox" : ""}.paypal.com/activity/actions/refund/edit/${order.payment.transaction_number}`, "_blank", "noreferrer");
+                }} />
                 <Box textAlign={"center"} fontSize={"0.7em"}>- לחץ בכדי לעדכן סטטוס -</Box>
             </AccordionPanel>
         </>
@@ -108,9 +137,9 @@ function OrderInfo({ order }) {
 
     return <Flex gap={"1em"} wrap={"wrap"} w="100%">
         <OrderInfoBlock icon={<HiLocationMarker size={"1.5em"} />}>
-            <Text>{customer.name}</Text>
-            <Text>{customer.phone}</Text>
-            <Text>{Object.values(customer.address).join(", ")}</Text>
+            <Text><strong>שם:</strong> {customer.name}</Text>
+            <Text><strong>נייד:</strong> {customer.phone}</Text>
+            <Text direction="rtl"><strong>כתובת:</strong> {`${customer.address.city}, ${customer.address.street} ${customer.address.building}`}</Text>
         </OrderInfoBlock>
 
         <OrderInfoBlock icon={<CgFileDocument size="1.5em" />}>
@@ -149,13 +178,15 @@ function OrderInfoBlock({ icon, children }) {
 
 //array of filter objects used to create buttons & run functions of filtration
 function genFilterOptions() {
-    return [
-        new FilterBtn("הכל", (order) => order, "orange"),
-        new FilterBtn("חדש", (order) => order.status == 1),
-        new FilterBtn("במשלוח", (order) => order.status == 2),
-        new FilterBtn("בוצע", (order) => order.status == 3),
-        new FilterBtn("בוטל", (order) => order.status == 4)
+    const btns = [
+        new FilterBtn("הכל", (order) => order, "orange")
     ]
+    orderStatusSteps.forEach((step, index) => btns.push(new FilterBtn(
+        step.title.split(" ").pop(),
+        (order) => order.status == index + 1,
+        step.color)
+    ));
+    return btns;
 }
 
 //array of sorters objects used to create buttons & run functions of sort

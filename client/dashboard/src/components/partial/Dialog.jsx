@@ -30,7 +30,7 @@ function DialogContent({ children, w, hasForm, header, cancel = "ביטול", ac
                 </AlertDialogHeader>
             }
 
-            <AlertDialogBody>
+            <AlertDialogBody p={["0 0.5em", "0 1em"]}>
                 {children}
             </AlertDialogBody>
 

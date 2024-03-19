@@ -12,6 +12,7 @@ import { Box, Container } from "@chakra-ui/react";
 import { AuthContext } from "./context/AuthProvider";
 import useAuth from "./hooks/useAuth";
 import Loader from "./components/partial/Loader";
+import Index from "./pages";
 //components
 const Nav = lazy(() => import("./components/partial/Nav"));
 const LoggedAdminFooter = lazy(() => import("./components/partial/LoggedAdminFooter"));
@@ -54,12 +55,15 @@ function App() {
 
   const router = createBrowserRouter(createRoutesFromElements(
     <Route path="/" element={<Root />}>
-      <Route index element={isAuth ? null : <Navigate to={"/login"} />} />
+      { /**prevent any route if not logged-in */}
+      <Route path="*" element={isAuth ? null : <Navigate to={"/login"} />} />
       <Route path="/login" element={<Login />} />
 
       <Route element={isAuth ? null : <Navigate to={"/login"} />}>
+        <Route index element={<Index />} />
         <Route path="/products" element={<Products />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/orders/:orderID" element={<Orders />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/users" element={<Users />} />
       </Route>

@@ -10,6 +10,7 @@ import Dialog from "../../partial/Dialog";
 import useQueryLogic from "../../../hooks/useQueryLogic";
 import Loader from "../../partial/Loader";
 import Error from "../../partial/Error";
+import useTitle from "../../../hooks/useTitle";
 
 function Managers() {
     useTitle("מנהלים")
