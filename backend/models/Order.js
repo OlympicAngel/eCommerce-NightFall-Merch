@@ -92,7 +92,9 @@ const order_schema = new Schema({
 
 	expireAt: {
 		type: Date,
-		default: Date.now(),
+		default: function () {
+			return Date.now();
+		},
 		expires: 60 * 60 * 24 * 3 // delete order after 3 days
 	}
 });

@@ -122,7 +122,8 @@ function OrderRow({ order, index, addAccordionIndex }) {
                 <Divider mt={"1em"} mb={"1em"} />
                 <OrderStatus status={order.status} onChange={(newState) => {
                     updateOrder({ status: newState })
-                    window.open(`https://www${import.meta.env.DEV ? ".sandbox" : ""}.paypal.com/activity/actions/refund/edit/${order.payment.transaction_number}`, "_blank", "noreferrer");
+                    if (newState == orderStatusSteps.length)
+                        window.open(`https://www${import.meta.env.DEV ? ".sandbox" : ""}.paypal.com/activity/actions/refund/edit/${order.payment.transaction_number}`, "_blank", "noreferrer");
                 }} />
                 <Box textAlign={"center"} fontSize={"0.7em"}>- לחץ בכדי לעדכן סטטוס -</Box>
             </AccordionPanel>

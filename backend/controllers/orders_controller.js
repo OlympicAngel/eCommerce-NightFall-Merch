@@ -1,69 +1,6 @@
 const OrderModel = require(`../models/Order`);
 
 module.exports = {
-
-    addNewOrderForGuest: async (req, res) => {
-        try {
-            console.log(req.body)
-            // gettind values from the body request
-            const {
-                payment,
-                products,
-                customer
-            } = req.body;
-
-            // creating OrderModel using the values from req.body
-            const new_Order = OrderModel({
-                payment,
-                products,
-                customer
-            });
-
-            // actual saving
-            await new_Order.save();
-
-            // return success message
-            return res.status(200).json({
-                success: true,
-                message: `success to add new order - for guest`
-            })
-        } catch (error) {
-            return res.status(500).json({
-                message: `error in add order - for guest`,
-                error: error.message
-            })
-        }
-    },
-
-    add: async (req, res) => {
-        try {
-            // gettind values from the body request
-            const { user, total_price, payment, products } = req.body;
-
-            // creating OrderModel using the values from req.body
-            const new_Order = OrderModel({
-                user,
-                total_price,
-                payment,
-                products
-            });
-
-            // actual saving
-            await new_Order.save();
-
-            // return success message
-            return res.status(200).json({
-                success: true,
-                message: `success to add new order`
-            })
-        } catch (error) {
-            return res.status(500).json({
-                message: `error in add order`,
-                error: error.message
-            })
-        }
-    },
-
     guests: {
         //get order by id ONLY IF it doesnt have user associated with it (to prevent privacy leak)
         getByID: async (req, res) => {

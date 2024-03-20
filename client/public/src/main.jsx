@@ -20,13 +20,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <ChakraProvider theme={theme}>
     <AuthProvider>
       <RealTimeData>
-        <CartProvider>
-          <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT, "currency": "ILS" }}>
+
+        <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT, "currency": "ILS" }}>
+          <CartProvider>
             <QueryClientProvider client={queryClient}>
               <App />
             </QueryClientProvider>
-          </PayPalScriptProvider>
-        </CartProvider>
+          </CartProvider>
+        </PayPalScriptProvider>
       </RealTimeData>
     </AuthProvider>
   </ChakraProvider>

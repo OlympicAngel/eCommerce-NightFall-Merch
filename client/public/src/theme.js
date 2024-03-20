@@ -8,13 +8,13 @@ const theme = extendTheme({
         heading: '"Secular One", sans-serif'
     },
     components: {
-        ...defaultScheme(["Button", "Checkbox", "Badge", "Spinner", "Tag", "Checkbox", "Switch", "Slider", "Table"], {
+        ...defaultScheme(["Button", "Checkbox", "Badge", "Spinner", "Tag", "Checkbox", "Switch", "Slider", "Table", "Popover", "CloseButton", "DrawerCloseButton"], {
             Button: defineStyleConfig({
                 variants: {
                     solid: {
                         letterSpacing: "0.03em",
                         color: "white",
-                        borderRadius: "0.15em",
+                        borderRadius: "0.3em",
                         fontSize: "1.5em",
                         textShadow: "0.09em 0.14em 0 rgba(0,0,0,0.45),0.04em 0.05em 0.3em rgba(0,0,0,0.5) ",
                         boxShadow: "inset 0 -1.25em 0 -1em rgba(0,0,0,0.4)",
@@ -43,15 +43,12 @@ const theme = extendTheme({
                         container: {
                             backgroundColor: "cardBg",
                             boxShadow: "2xl",
-                            transition: "box-shadow 0.3s ease-in-out",
+                            transition: "box-shadow 0.3s ease-in-out, outline 0.4s",
                             outline: "0.2em solid",
                             margin: "0.2em",
                             outlineColor: "high.purple",
                             borderRadius: "0.3em",
                             m: "auto",
-                            _hover: {
-                                boxShadow: "dark-lg",
-                            }
                         },
                         header: {
                             color: "high.blue",
@@ -78,10 +75,7 @@ const theme = extendTheme({
                 default: "#fbf6ff",
                 _dark: "#130e18"
             },
-            paypalBG: {
-                default: "rgba(255,255,255,1)",
-                _dark: "#f5e6ff"
-            },
+
             high: {
                 blue: {
                     default: "#3580cb",
@@ -90,6 +84,14 @@ const theme = extendTheme({
                 purple: {
                     default: "#7734c6",
                     _dark: "#8f3eef"
+                },
+                red: {
+                    default: "red.300",
+                    _dark: "red.200"
+                },
+                green: {
+                    default: "green.500",
+                    _dark: "green.200"
                 }
             },
             uiPurple: {
@@ -103,8 +105,8 @@ const theme = extendTheme({
                 900: "high.purple",
             },
             cardBg: {
-                default: "#fff",
-                _dark: "#1d112d"
+                default: "white",
+                _dark: "hsl(295 22% 7% / 1)"
             },
 
             red: {
@@ -118,6 +120,18 @@ const theme = extendTheme({
                 700: "#990000",
                 800: "#800000",
                 900: "#660000",
+            },
+            green: {
+                50: "#f9ffe5",
+                100: "#d8f5a2",
+                200: "#9de13b",
+                300: "#85e047",
+                400: "#5ddc1f",
+                500: "#3fc307",
+                600: "#36a700",
+                700: "#2c8500",
+                800: "#226300",
+                900: "#173c00",
             },
             blue: {
                 50: "#e6f7ff",

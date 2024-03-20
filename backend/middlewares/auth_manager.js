@@ -60,8 +60,6 @@ async function AuthManager(req, res, next, permission = Object.keys(permissionMa
     const decode = jwt.verify(token, process.env.JWT_SECRET);
     const manager = await Manager.findById(decode.manager);
 
-    console.log(!manager, manager.permission, permission)
-
     if (!manager ||     //make sure user is indeed manager 
       (manager.permission < permission)) //prevent access to all users that their permission is lower then needed
       return res.status(401).json(noAccessErr);

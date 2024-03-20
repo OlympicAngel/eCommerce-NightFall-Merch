@@ -95,8 +95,8 @@ module.exports = {
         //replace image with cloudinary storage
         if (req.file !== undefined) {
           const data = await cloudinary.uploader.upload(req.file.path); //upload to cloud
-          fs.unlinkSync(req.file.path) //if no error - delete file origin
           cloudinary_asset_public_id = data.public_id; //set id to outer scope - in case of save error (delete purpose)
+          fs.unlinkSync(req.file.path) //if no error - delete file origin
           new_Product.image = data.secure_url; //update db url
         }
 
@@ -123,19 +123,19 @@ module.exports = {
     },
 
     updateById: async (req, res) => {
+      let cloudinary_asset_public_id;
+
       try {
         const id = req.params.id;
-
-        let data;
         //if file uploaded
         if (req.file !== undefined) {
           //upload file to cloudinary
-          data = await cloudinary.uploader.upload(req.file.path)
-          //replace image url
-          req.body.image = data.secure_url;
-
-          const product = await ProductModel.findById(id);
+          const data = await cloudinary.uploader.upload(req.file.path)
+          cloudinary_asset_public_id = data.public_id; //set id to outer scope - in case of save error (delete purpose)
+          fs.unlinkSync(req.file.path) //if no error - delete file origin
+          req.body.image = data.secure_url;//replace image url
           //delete old image
+          const product = await ProductModel.findById(id);
           if (product.image)
             cloudinary.uploader.destroy(product.getImgID()).catch(() => { });
         }
@@ -148,6 +148,12 @@ module.exports = {
           message: `מוצר עודכן בהצלחה`,
         });
       } catch (error) {
+
+        //if error delete asset from cloud
+        if (cloudinary_asset_public_id) {
+          cloudinary.uploader.destroy(cloudinary_asset_public_id).catch(() => { });
+        }
+
         return res.status(500).json({
           message: `לא היה ניתן לעדכן מוצר`,
           error: error.message,

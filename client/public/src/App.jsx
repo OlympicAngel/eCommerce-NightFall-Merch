@@ -1,14 +1,16 @@
 import {
   createBrowserRouter, RouterProvider, Route, createRoutesFromElements
 } from "react-router-dom";
-import About from './pages/public/About';
-import Contact from './pages/public/Contact';
-import Register from './pages/public/Register';
-import Login from './pages/public/Login';
-import Products from './pages/public/Products';
-import ProductSingle from './pages/public/ProductSingle';
-import Orders from './pages/private/Orders';
+import { lazy } from "react";
 import Root from "./pages/public/Root";
+
+const About = lazy(() => import('./pages/public/About'))
+const Contact = lazy(() => import('./pages/public/Contact'))
+const Register = lazy(() => import('./pages/public/Register'))
+const Login = lazy(() => import('./pages/public/Login'))
+const Products = lazy(() => import('./pages/public/Products'))
+const ProductSingle = lazy(() => import('./pages/public/ProductSingle'))
+const Orders = lazy(() => import('./pages/private/Orders'))
 
 function App() {
   const router = createBrowserRouter(

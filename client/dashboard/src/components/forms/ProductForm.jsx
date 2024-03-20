@@ -11,7 +11,6 @@ import useMutationLogic from "../../hooks/useMutationLogic";
 
 
 function ProductForm({ product = {}, method = "post", closeDialog, btnText = "הוסף" }) {
-    const { SERVER } = useContext(AuthContext)
     const formRef = useRef()
     const [image, setImage] = useState(product.image);
     const buttonColorConfig = { post: "green.200", put: "orange.300" }
@@ -26,7 +25,6 @@ function ProductForm({ product = {}, method = "post", closeDialog, btnText = "ה
         },
         method
     })
-    //const formData = new FormData(formRef.current);
     const isLoading = mutation.isLoading;
 
     function updateImageView(e) {
@@ -43,13 +41,13 @@ function ProductForm({ product = {}, method = "post", closeDialog, btnText = "ה
 
     return (
         <Formik
-            initialValues={{ name: product.name || "", price: product.price || "", description: product.description || "", category: product.category?._id || "", image: image || "" }}
+            initialValues={{ name: product.name || "", price: product.price || "", description: product.description || "", category: product.category?._id || "", image: "" }}
             validationSchema={yup.object({
                 name: yup.string().required("חייב להזין שם").min(2, "שם קצר מידי"),
                 price: yup.number().required("חייב להזין מחיר כלשהו").min(0, "מחיר לא יכול להיות שלילי"),
                 category: yup.string().required("חייב לבחור קטגוריה")
             })}
-            onSubmit={(values, actions) => { mutation.mutate(values); }}>
+            onSubmit={(values, actions) => { mutation.mutate(new FormData(formRef.current)); }}>
             <Container as={Form} p="1em" ref={formRef}>
                 <Flex gap="1em">
                     <FormInput placeholder={"שם"} name="name" isRequired={true} min="1" />

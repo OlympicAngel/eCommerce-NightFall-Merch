@@ -30,7 +30,6 @@ router.post("/api/:orderID/capture", paypal_controller.captureOrder)
 
 
 // guests requests
-router.post('/', orders.addNewOrderForGuest)
 router.get('/guest/:id', orders.guests.getByID)
 
 

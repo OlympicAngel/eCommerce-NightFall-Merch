@@ -1,6 +1,6 @@
 import { PayPalButtons } from "@paypal/react-paypal-js"
-import { useContext, useEffect, useState } from "react"
-import { Box, useToast } from "@chakra-ui/react";
+import { useContext, useEffect, useRef, useState } from "react"
+import { Box, Card, useToast } from "@chakra-ui/react";
 import { CartContext } from "../context/CartProvider";
 import axios from "axios";
 import { AuthContext } from "../context/AuthProvider";
@@ -9,7 +9,7 @@ import Loader from "./partials/Loader";
 import { CartItem } from "../utils/types";
 
 
-function BuyButton() {
+function BuyButton(props) {
     const { cartItems } = useContext(CartContext) //we extract here so the paypal button could listen to it & re render as needed
     const [isLoading, setIsLoading] = useState(true) //used to display only when loaded (prevent jumpy hitbox on container Box)
 
@@ -18,10 +18,42 @@ function BuyButton() {
         setIsLoading(true)
     }, [cartItems])
 
+    //get height of btn to animate it opening/closing
+    const containerRef = useRef();
+    const [updateSize, setUpdateSize] = useState()
+    const toggleSize = () => setUpdateSize(p => !p)
+    useEffect(() => {
+        let initialHeight = containerRef.current.scrollHeight;
+        let updated = 0;
+        let cycles = 0;
+        let inter;
+        const update = () => {
+            const height = containerRef.current.scrollHeight;
+            if (initialHeight == height) { //if no change in height
+                if (updated > 5) //if already changed once - stop loop
+                    clearInterval(inter)
+                return;
+            }
+            updated++; //set updated
+            initialHeight = height; //update for later check (first if)
+            containerRef.current.style.height = height + "px";
+
+            //if from some reason it keeps looping - exit
+            cycles++;
+            if (cycles > 10)
+                clearInterval(inter)
+        }
+        inter = setInterval(update, 500)
+        return () => clearInterval(inter)
+    }, [isLoading, updateSize])
+
+
+    const [creatingOrder, setCreatingOrder] = useState(false)
+
     //create order from server logic
-    const createOrder = genOrder()
+    const createOrder = genOrder(toggleSize, setCreatingOrder)
     const onApprove = genApprove()
-    const onCancel = genOnCancel();
+    const onCancel = genOnCancel(containerRef);
 
     function preventClose(e) {
         e.preventDefault();
@@ -30,36 +62,39 @@ function BuyButton() {
     function removeCloseEvent() { window.removeEventListener("beforeunload", preventClose) }
 
     useEffect(() => {
-        return;
         window.addEventListener("beforeunload", preventClose)
         return removeCloseEvent // remove when dismounting
-    })
+    }, [])
+
 
     //https://paypal.github.io/react-paypal-js/?path=/story/example-paypalbuttons--default&args=showSpinner:true
     return (
-        <Box m={"0.5em auto"} minH="10em" zIndex={0} position={"relative"} textAlign={"center"} style={{ colorScheme: "light" }} bg="paypalBG" p="1em" pb="0" borderRadius={"0.4em"}
-            border="solid 0.15em" borderColor="orange.300" boxShadow={"dark-lg"} w={"inherit"} maxW={"min(100%,600px)"}>
-            <Box display={["block", "none"][~~isLoading]}>
-                <PayPalButtons
-                    createOrder={createOrder}
-                    onApprove={onApprove}
-                    onError={onError}
-                    onCancel={onCancel}
-                    showSpinner={true}
-                    forceReRender={[cartItems]}
-                    onInit={() => setIsLoading(false)}
-                    style={{
-                        label: "checkout",
-                        color: "gold",
-                        shape: "pill",
-                        layout: "vertical",
-                        maxWidth: "100%",
-                        showSpinner: true,
-                        disableMaxWidth: true,
-                        background: "red"
-                    }} />
+        <Box m={"auto"} minH="5em" zIndex={0} style={{ colorScheme: "light" }} bg="white" position={"relative"} borderRadius={"3em 3em 0 0"}
+            w={"inherit"} p={"1em"} pb={0} {...props} borderTop={"0.7em solid"} borderColor={"high.purple"}>
+            <Box display={["block", "none"][~~isLoading]} overflow={"hidden"} h={"5em"} ref={containerRef} transition={"0.2s linear"}>
+                {props.children}
+                <Box display={["block", "none"][~~creatingOrder]}>
+                    <PayPalButtons
+                        createOrder={createOrder}
+                        onApprove={onApprove}
+                        onError={onError}
+                        onCancel={onCancel}
+                        showSpinner={true}
+                        forceReRender={[cartItems]}
+                        onInit={() => setIsLoading(false)}
+                        style={{
+                            label: "checkout",
+                            color: "gold",
+                            shape: "pill",
+                            layout: "vertical",
+                            maxWidth: "100%",
+                            showSpinner: true,
+                            disableMaxWidth: true,
+                            background: "red"
+                        }} />
+                </Box>
             </Box>
-            {isLoading && <Loader />}
+            {(isLoading || creatingOrder) && <Loader />}
         </Box>
     )
 }
@@ -69,12 +104,13 @@ function BuyButton() {
  * sends the server the current cart - server communicate with PayPal and returns order controls from PayPal
  * @returns 
  */
-function genOrder() {
+function genOrder(updateSize, setCreatingOrder) {
     const toast = useToast()
     const { cartItems } = useContext(CartContext)
     const { SERVER } = useContext(AuthContext)
 
     return async function createOrder(data, actions) {
+        setCreatingOrder(true)
         try {
             //send the cart items to the server - then the server calls paypal and creates the order itself so users cant(easily) edit it at their side
             const res = await axios.post(`${SERVER}orders/api/create`, { cart: cartItems })
@@ -104,6 +140,9 @@ function genOrder() {
                 //TODO: show message and possibly compare whats changed
             }
             toastError(e, toast);
+        } finally {
+            updateSize(true);
+            setCreatingOrder(false)
         }
     }
 }
@@ -155,7 +194,7 @@ function genApprove() {
 
 }
 
-function genOnCancel() {
+function genOnCancel(containerRef) {
     const toast = useToast()
     const { SERVER } = useContext(AuthContext);
     return async (data, actions) => {
@@ -165,6 +204,9 @@ function genOnCancel() {
             toastSuccess(res.data.message, toast)
         } catch (e) {
             toastError(e, toast);
+        }
+        finally {
+            containerRef.current.style.height = "auto"
         }
     }
 }

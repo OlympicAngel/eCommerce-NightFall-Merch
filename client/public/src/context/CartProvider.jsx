@@ -1,13 +1,15 @@
 import { useState } from "react"
 import { useEffect } from "react"
 import { createContext } from "react"
-import { CartItem } from "../utils/types"
+import { CartItem, Product } from "../utils/types"
+import CartView from "../components/partials/CartView"
 
 export const CartContext = createContext()
 
 function CartProvider({ children }) {
   /** @type {[CartItem[],Function]} */
   const [cartItems, setCart] = useState([])
+  const [isToggle, setIsToggle] = useState()
 
 
 
@@ -24,6 +26,11 @@ function CartProvider({ children }) {
     localStorage.cartItems = JSON.stringify(cartItems)
   }, [cartItems])
 
+  /**
+   * adds a product to cart
+   * @param {Product} product 
+   * @returns 
+   */
   function addToCart(product) {
     const isProductAlreadyInCart = cartItems.find(p => p.product == product._id)
 
@@ -43,6 +50,11 @@ function CartProvider({ children }) {
       return p;
     }))
   }
+  /**
+   * removed a product from cart (as count)
+   * @param {Product} product 
+   * @returns 
+   */
   function removeFromCart(product) {
     const isProductAlreadyInCart = cartItems.find(p => p.product == product._id)
 
@@ -57,21 +69,34 @@ function CartProvider({ children }) {
       return p.quantity > 0; //if quantity <= 0 set to false - filter it out
     }))
   }
+
+  /**
+   * completely remove product from cart
+   * @param {Product} product 
+   */
   function deleteFromCart(product) {
     //keep only none this
     setCart(cartItems.filter(p => p.product != product._id))
   }
-  //calculate item count
+
+  /**
+   * get total ite m COUNT
+   * @returns {Number}
+   */
   function getItemsCount() {
     return cartItems.reduce((preVal, p) => preVal + p.quantity, 0)
   }
 
-  //calculate cart worth
+  /**
+   * get total cart worth
+   * @returns {Number}
+   */
   function getCartPrice() {
     return cartItems.reduce((preVal, p) => preVal + p.quantity * p.ref.price, 0)
   }
 
   /**
+   * used to pass it to server with minimal data required
    * @returns {CartItem[]}
    */
   function simplifyCart() {
@@ -79,6 +104,15 @@ function CartProvider({ children }) {
       const { product, quantity } = item;
       return { product, quantity }
     });
+  }
+
+  /**
+   * checks if an product is inside the card
+   * @param {Product} product 
+   * @returns {CartItem}
+   */
+  function checkIsOnCart(product) {
+    return cartItems.find(ci => ci.product == product._id)
   }
 
   const data = {
@@ -89,11 +123,14 @@ function CartProvider({ children }) {
     resetCart: () => { setCart([]) },
     getItemsCount,
     getCartPrice,
-    simplifyCart
+    simplifyCart,
+    OpenCart: () => setIsToggle(prev => !prev),
+    checkIsOnCart
   }
   return (
     <CartContext.Provider value={data}>
       {children}
+      <CartView toggleOpen={isToggle} />
     </CartContext.Provider>
   )
 }
