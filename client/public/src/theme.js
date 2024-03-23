@@ -27,10 +27,9 @@ const theme = extendTheme({
                         }
                     },
                     ghost: {
-                        bg: "rgba(0,0,0,0.05)",
-                        _hover: {
-                            bg: "rgba(0,0,0,0.15)"
-                        }
+                        fontSize: "1.5em",
+                        fontWeight: "900",
+                        bg: "blackWhite.200",
                     }
                 }
             }),
@@ -49,6 +48,8 @@ const theme = extendTheme({
                             outlineColor: "high.purple",
                             borderRadius: "0.3em",
                             m: "auto",
+                            p: ["0.5em", "1em"],
+                            w: ["calc(100% - 0.5em)", "calc(100% - 1em)", "100%"],
                         },
                         header: {
                             color: "high.blue",
@@ -76,6 +77,15 @@ const theme = extendTheme({
                 _dark: "#130e18"
             },
 
+            blackWhite: {
+                default: "black",
+                _dark: "white",
+                200: {
+                    default: "rgba(0,0,0,0.15)",
+                    _dark: "rgba(255,255,255,0.05)",
+                }
+            },
+
             high: {
                 blue: {
                     default: "#3580cb",
@@ -94,16 +104,7 @@ const theme = extendTheme({
                     _dark: "green.200"
                 }
             },
-            uiPurple: {
-                100: "high.purple",
-                200: "high.purple",
-                300: "high.purple",
-                400: "high.purple",
-                500: "high.purple",
-                700: "high.purple",
-                800: "high.purple",
-                900: "high.purple",
-            },
+
             cardBg: {
                 default: "white",
                 _dark: "hsl(295 22% 7% / 1)"
@@ -182,9 +183,10 @@ const theme = extendTheme({
                 900: "#660033",
             },
             purple: {
+                trans: "rgb(119 52 198 / 52%)",
                 50: "#f7eaff",
                 100: "#e0b2ff",
-                200: "#c780ff",
+                200: "#8f3eef",
                 300: "#ad4dff",
                 400: "#9400ff",
                 500: "#8000e6",
@@ -207,7 +209,7 @@ function defaultScheme(arr = [], config) {
         if (!obj[key].defaultProps)
             obj[key].defaultProps = {}
         if (!obj[key].defaultProps.colorScheme)
-            obj[key].defaultProps.colorScheme = "uiPurple"
+            obj[key].defaultProps.colorScheme = "purple"
     })
     return obj
 }

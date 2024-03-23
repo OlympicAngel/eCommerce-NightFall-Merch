@@ -12,6 +12,7 @@ const products = require('../controllers/products_controller');
 //Guests GET
 router.get('/', products.getAll);
 router.get('/:id', products.getById);
+router.get("/related/:id", products.getRelatedByID)
 router.get("/c/:category", products.getByCategory)
 
 

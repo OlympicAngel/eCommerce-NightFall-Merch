@@ -17,7 +17,7 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<Root />}>
         <Route index element={<Products />} />
-        <Route path="product/:id" element={<ProductSingle />} />
+        <Route path="product/:id/*" element={<ProductSingle />} />
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
         <Route path="register" element={<Register />} />

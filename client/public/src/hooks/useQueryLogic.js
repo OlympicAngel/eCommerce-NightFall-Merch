@@ -22,7 +22,7 @@ export function useQueryLogic({ key, urlPath, select }) {
     return useQuery({
         queryKey: keys,
         queryFn: async () => axios.get(SERVER + urlPath, { withCredentials: true }),
-        select: (res) => select ? select(res) : res.data[key],
+        select: (res) => select ? select(res) : res.data[key.split("_")[0]],
         staleTime: 1000 * 60, //dont send request (use cache) if not older then 60 sec
         refetchInterval: 1000 * 60,
         retry: 0

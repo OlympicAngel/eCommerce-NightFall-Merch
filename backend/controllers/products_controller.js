@@ -31,16 +31,87 @@ module.exports = {
   //get single product
   getById: async (req, res) => {
     try {
-      const products = await ProductModel.findById(req.params.id).populate({ path: "category" }).exec();
+      const product = await ProductModel.findById(req.params.id).populate({ path: "category" }).exec();
 
       return res.status(200).json({
         success: true,
         message: `מוצר נשלף בהצלחה`,
-        products,
+        product,
       });
     } catch (error) {
       return res.status(500).json({
         message: `לא היה ניתן למצוא את המוצר`,
+        error: error.message,
+      });
+    }
+  },
+
+  // /**returns related products by id */
+  getRelatedByID: async (req, res) => {
+    try {
+      const product = await ProductModel.findById(req.params.id);
+      if (!product)
+        return new Error("מוצר לחיפוש לא נמצא")
+
+      // Extract individual words from the input product's title and description
+      const titleWords = product.name.split(" ");
+      const descriptionWords = product?.description?.trim()?.split(" ") || []; //description might be undefined
+
+      const similarProducts = await ProductModel.aggregate([
+        {
+          $sample: { size: 50 } // Get 50 random documents from the collection
+        },
+        {
+          $match: {
+            _id: { $ne: product._id } // Exclude the input product itself
+          }
+        },
+        {
+          $project: {
+            name: 1,
+            price: 1,
+            image: 1,
+            description: 1,
+            category: 1,
+            similarityScore: {
+              $add: [
+                {// Increase score if category matches
+                  $cond: [{
+                    $eq: ['$category', product.category]
+                  }, 0.5, 0]
+                },
+                {// compare title words array of each product and give relative score for each match 
+                  $multiply: [{
+                    $size: { $setIntersection: [titleWords, { $split: ['$name', " "] }] }
+                  }, 2 / titleWords.length]
+                },
+                {// compare description words array of each product and give relative score for each match 
+                  $multiply: [{
+                    $size: { $setIntersection: [descriptionWords, { $split: ['$description', " "] }] }
+                  }, descriptionWords.length > 0 ? (1 / descriptionWords.length) : 0]
+                }
+              ]
+            }
+          }
+        },
+        {
+          $sort: { similarityScore: -1 } // Sort by similarity score in descending order
+        },
+        {
+          $limit: 8 // Limit to 10 similar products
+        }
+      ]);
+
+      const populatedProducts = await ProductModel.populate(similarProducts, { path: "category" })
+
+      return res.status(200).json({
+        success: true,
+        message: `מוצרים נשלפו בהצלחה`,
+        products: populatedProducts,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: `לא היה ניתן למצוא מוצרים דומים`,
         error: error.message,
       });
     }

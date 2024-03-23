@@ -54,7 +54,7 @@ function RealTimeData({ children }) {
 export default RealTimeData
 
 //get user id / guest session id
-function getUserUUID(isAuth, user) { return isAuth ? user._id : ("guest_" + sessionStorage.guest.split(".").pop()); }
+function getUserUUID(isAuth, user) { return isAuth ? user._id : ("guest_" + sessionStorage.guest?.split(".")?.pop()); }
 
 
 export async function updateRealTimeLooking(isAuth, user) {

@@ -5,6 +5,16 @@ body {
     min-height: 100vh !important;
 }
 
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: inherit;
+}
+
+#root>main {
+    flex: 1;
+}
+
 body::before {
     content: "";
     position: fixed;
