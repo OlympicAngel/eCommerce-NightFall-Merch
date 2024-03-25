@@ -10,7 +10,6 @@ import ErrorView from "../partials/ErrorView"
 function RelatedProducts({ product }) {
     // show loader and DON'T initialize Content as it will send invalid use query logic
     const hasProduct = product && product._id;
-    console.log(hasProduct)
     return <Skeleton isLoaded={hasProduct} w={"100%"}>
         <Card outlineColor={"high.blue"} p={"0 !important"}>
             <Heading p={"0.2em"}>מוצרים דומים:</Heading>

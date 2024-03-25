@@ -4,10 +4,13 @@ import { useEffect, useState } from "react";
 import { useToast } from "@chakra-ui/react";
 import { toastError } from "../../utils/toast.helper";
 import ProductView from "../../components/Product/ProductView";
+import useTitle from "../../hooks/useTitle";
 
 function ProductSingle() {
   const { state } = useLocation();
   const [product, setProduct] = useState(state?.product)
+
+  useTitle(product?.name || "דף מוצר")
 
   //get url product id
   const { id: urlProductID } = useParams()

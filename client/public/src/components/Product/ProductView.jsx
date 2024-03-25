@@ -96,10 +96,10 @@ function CartManageUI({ product, isOnCart }) {
                     || <>
                         <Text fontSize={"xl"}>כרגע בסל:</Text>
                         <HStack gap={"1em"} as={Card} w={"auto !important"} outline={"1px solid"} outlineColor={"high.purple"} p={"0.5em !important"} justifyContent={"space-between"}>
-                            <Button variant={"ghost"} style={{ "-webkit-text-stroke": "0.1em" }} onClick={() => addToCart(product)} isDisabled={isOnCart.quantity >= 10}>+</Button>
+                            <Button variant={"ghost"} style={{ "WebkitTextStroke": "0.1em" }} onClick={() => addToCart(product)} isDisabled={isOnCart.quantity >= 10}>+</Button>
                             <Heading as="h4" minW={"2ch"} textAlign={"center"}>{isOnCart.quantity}</Heading>
                             <Tooltip bg="red.700" color="white" label='מחיקת המוצר מהסל לגמרי?' hasArrow isDisabled={isOnCart.quantity > 1}>
-                                <Button variant={"ghost"} style={{ "-webkit-text-stroke": "0.1em" }}
+                                <Button variant={"ghost"} style={{ "WebkitTextStroke": "0.1em" }}
                                     onClick={() => {
                                         removeFromCart(product)
                                         if (isOnCart.quantity == 0)

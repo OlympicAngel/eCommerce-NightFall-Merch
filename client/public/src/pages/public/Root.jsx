@@ -4,7 +4,7 @@ import Footer from "../../components/partials/Footer";
 import { useEffect, useContext, Suspense } from "react";
 import { updateRealTimeLooking } from "../../context/RealTimeData";
 import { AuthContext } from "../../context/AuthProvider";
-import { Container } from "@chakra-ui/react";
+import { Box, Container } from "@chakra-ui/react";
 import Loader from "../../components/partials/Loader";
 
 
@@ -17,9 +17,9 @@ function Root() {
     }, [location])
     return (
         <>
-            <header>
+            <Box as="header" minH={["5em", "auto"]}>
                 <Nav />
-            </header>
+            </Box>
             <Container p={1} as="main" maxW='8xl' minH="100vh - 4em" fontSize={["xs", "sm", "md"]} borderRadius="1em" centerContent>
                 <Suspense fallback={<Loader />} >
                     <Outlet />

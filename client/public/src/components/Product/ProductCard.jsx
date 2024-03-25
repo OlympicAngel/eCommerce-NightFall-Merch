@@ -3,14 +3,14 @@ import { IoIosRemoveCircle } from "react-icons/io";
 import { IoIosAddCircle } from "react-icons/io";
 import { FaCartArrowDown } from "react-icons/fa";
 import { FaCartPlus } from "react-icons/fa";
-import { Badge, Box, Button, Card, HStack, Heading, Image, Popover, PopoverArrow, PopoverBody, PopoverContent, PopoverHeader, PopoverTrigger, Skeleton, Spacer, Text, VStack, useDisclosure, useToast } from "@chakra-ui/react";
+import { Badge, Box, Button, Card, HStack, Heading, Image, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Skeleton, Spacer, Text, Tooltip, VStack, useDisclosure, useToast } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../../context/CartProvider";
 import { toastError, toastSuccess } from "../../utils/toast.helper";
 import { Link } from "react-router-dom";
 
 
-function ProductCard({ product = { _id: "", name: "", price: 0 } }) {
+function ProductCard({ product = { _id: "", name: "", price: 0 }, onAddToCart, children }) {
     const { checkIsOnCart, cartItems } = useContext(CartContext)
     const [isOnCart, setIsOnCart] = useState(false)
 
@@ -18,6 +18,8 @@ function ProductCard({ product = { _id: "", name: "", price: 0 } }) {
     useEffect(() => {
         setIsOnCart(checkIsOnCart(product))
     }, [cartItems])
+
+    const { isOpen, onClose, onOpen } = useDisclosure({ "isOpen": children != undefined })
 
     return (
         <Card height={"-webkit-fill-available"} w="-webkit-fill-available"
@@ -33,8 +35,18 @@ function ProductCard({ product = { _id: "", name: "", price: 0 } }) {
             <VStack height={"-webkit-fill-available"}>
                 <ProductInfo {...{ isOnCart, product }} />
                 <Spacer flex="1"></Spacer>
-                <ProductsButtons {...{ isOnCart, product }} />
+                <ProductsButtons {...{ isOnCart, product, onAddToCart }} />
             </VStack>
+            {children &&
+                <Popover isOpen={isOpen} onClose={() => { onAddToCart(); }}>
+                    <PopoverTrigger>
+                        <Text></Text>
+                    </PopoverTrigger>
+                    <PopoverContent w="100vw">
+                        {children}
+                    </PopoverContent>
+                </Popover>}
+
         </Card>
     )
 }
@@ -50,7 +62,7 @@ function ProductInfo({ isOnCart, product }) {
                 <Skeleton isLoaded={product._id}>
                     <HStack fontSize='2xl'>
                         <HStack>
-                            <Text fontSize={"md"}>{isOnCart && (isOnCart.quantity + " x")}</Text>
+                            <Text fontSize={"md"} whiteSpace={"nowrap"}>{isOnCart && (isOnCart.quantity + " x")}</Text>
                             <Text color={isOnCart ? "high.purple" : "high.blue"}>{product.price.toLocaleString()}{product?.price % 1 == 0 && ".00"}</Text>
                         </HStack>
                         <Text fontSize={"md"}>₪</Text>
@@ -61,7 +73,7 @@ function ProductInfo({ isOnCart, product }) {
     </Box>;
 }
 
-function ProductsButtons({ isOnCart, product }) {
+function ProductsButtons({ isOnCart, product, onAddToCart }) {
     const { isOpen, onToggle, onClose, onOpen } = useDisclosure()
 
     const { addToCart, removeFromCart, OpenCart } = useContext(CartContext);
@@ -71,6 +83,7 @@ function ProductsButtons({ isOnCart, product }) {
         if (!isOnCart) {
             addToCart(product)
             toastSuccess((<Box>המוצר נוסף לסל  - <Button onClick={() => OpenCart() || toast.closeAll()}>לתשלום</Button></Box>), toast)
+            onAddToCart && onAddToCart(product)
         }
         else
             onOpen();
