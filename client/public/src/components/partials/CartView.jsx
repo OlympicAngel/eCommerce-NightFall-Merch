@@ -115,7 +115,7 @@ function CartItems({ }) {
             const product = p.ref;
             return <Flex key={p.product} minW={"max(45%,200px)"} flex={["1", "0.5"]} gap={"0.2em"} flexDir={"row"} alignItems={"center"} justifyContent={"space-around"}>
                 <Image borderRadius="md" flex="1" objectFit='cover' maxW={"40%"} src={product?.image} alt={product?.name}
-                    fallbackSrc='https://via.placeholder.com/150'>
+                    fallbackSrc='/images/noImage.jpg'>
                 </Image>
                 <Box>
                     <Text opacity="0.7" flex="0">{product.name}</Text>

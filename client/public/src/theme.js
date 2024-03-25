@@ -77,6 +77,11 @@ const theme = extendTheme({
                 _dark: "#130e18"
             },
 
+            gray: {
+                default: "gray.200",
+                _dark: "gray.700"
+            },
+
             blackWhite: {
                 default: "black",
                 _dark: "white",

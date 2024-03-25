@@ -7,14 +7,15 @@ import { Link } from "react-router-dom"
 import { MdDelete } from "react-icons/md"
 import ErrorView from "../partials/ErrorView"
 
-function RelatedProducts({ product }) {
+function RelatedProducts(props) {
+    const { product } = props
     // show loader and DON'T initialize Content as it will send invalid use query logic
     const hasProduct = product && product._id;
     return <Skeleton isLoaded={hasProduct} w={"100%"}>
-        <Card outlineColor={"high.blue"} p={"0 !important"}>
+        <Card outlineColor={"high.blue"} p={"0 !important"} {...props}>
             <Heading p={"0.2em"}>מוצרים דומים:</Heading>
             <HStack justifyContent={"space-between"} p="1em"
-                gap={"2em"} w={"100%"} alignItems={"stretch"} overflow={"auto !important"}>
+                gap={"2em"} w={"100%"} alignItems={"stretch"} overflowY={"auto !important"}>
                 {hasProduct && <Content product={product} />}
             </HStack>
         </Card>
@@ -63,7 +64,7 @@ function RelatedProduct({ product, isLoading }) {
 
     return <Flex flexDir={"column"} position={"relative"} alignItems={"stretch"} {...containerStyle}>
         <Image borderRadius="md" flex="1" objectFit='cover' maxH={["auto", "auto", "80%"]} src={product?.image} alt={product?.name}
-            fallbackSrc='https://via.placeholder.com/150'>
+            fallbackSrc='/images/noImage.jpg'>
         </Image>
         <Tooltip label="עוד פרטים על המוצר">
             <Button m={0} as={Link} to={`../product/${product._id}/${product.name}`} alt={"עוד מידע על " + product?.name} colorScheme="blue" p={0} borderRadius={"100%"}

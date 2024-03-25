@@ -21,13 +21,13 @@ function ProductView({ product = { _id: "", name: "", price: 0 } }) {
     //update is on cart when cart changes
     useEffect(() => {
         setIsOnCart(checkIsOnCart(product))
-    }, [cartItems])
+    }, [cartItems, product])
 
     return (<Flex flexDir={"column"} w={"100%"} gap={"3em"}>
         <Card>
             <Flex w="100%" flexDir={"row-reverse"} justifyContent={"center"} flexWrap={"wrap"} gap={"1em"}>
                 <Skeleton isLoaded={product._id} flex="1" w={"-moz-min-content"}>
-                    <Image borderRadius={"0.5em"} width="100%" minW={"max(30vw,20em)"} objectFit='cover' src={product?.image} alt={product?.name} aspectRatio={"1"} fallbackSrc='https://via.placeholder.com/150'></Image>
+                    <Image borderRadius={"0.5em"} width="100%" minW={"max(30vw,20em)"} objectFit='cover' src={product?.image} alt={product?.name} aspectRatio={"1"} fallbackSrc='/images/noImage.jpg'></Image>
                 </Skeleton>
                 <VStack flex="1.5" minW={"45ch"} alignItems={"flex-start"}>
                     <Skeleton isLoaded={product._id}>

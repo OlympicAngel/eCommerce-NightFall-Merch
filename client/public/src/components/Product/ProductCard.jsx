@@ -30,7 +30,7 @@ function ProductCard({ product = { _id: "", name: "", price: 0 }, onAddToCart, c
                     borderTopRightRadius={"inherit"} variant='solid' position={"absolute"}>{product.category.name}</Badge>
             }
             <Skeleton isLoaded={product._id}>
-                <Image objectFit='cover' width="100vw" src={product.image} alt={product.name} aspectRatio={"1"} fallbackSrc='https://via.placeholder.com/150'></Image>
+                <Image objectFit='cover' width="100vw" src={product.image} alt={product.name} aspectRatio={"1"} fallbackSrc='/images/noImage.jpg'></Image>
             </Skeleton>
             <VStack height={"-webkit-fill-available"}>
                 <ProductInfo {...{ isOnCart, product }} />
@@ -42,8 +42,10 @@ function ProductCard({ product = { _id: "", name: "", price: 0 }, onAddToCart, c
                     <PopoverTrigger>
                         <Text></Text>
                     </PopoverTrigger>
-                    <PopoverContent w="100vw">
+                    <PopoverContent w="max(70vw,300px)" boxShadow={"dark-lg"}>
+                        <PopoverArrow fontSize={2} />
                         {children}
+                        <PopoverCloseButton />
                     </PopoverContent>
                 </Popover>}
 
