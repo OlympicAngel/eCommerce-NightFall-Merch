@@ -60,9 +60,14 @@ User.pre('save', async function (next) {
     this.password = await hash(this.password)
     next();
 })
+User.pre('findOneAndUpdate', async function (next) {
+    if (!this._update.password) return next();
+    this._update.password = await hash(this._update.password)
+    next();
+});
 
 async function hash(pass) {
-    return await bcrypt.hash(pass, 15);
+    return await bcrypt.hash(pass, 10);
 }
 
 module.exports = mongoose.model('users', User)

@@ -1,5 +1,5 @@
 import {
-  createBrowserRouter, RouterProvider, Route, createRoutesFromElements
+  createBrowserRouter, RouterProvider, Route, createRoutesFromElements, Navigate
 } from "react-router-dom";
 import { lazy } from "react";
 import Root from "./pages/public/Root";
@@ -17,6 +17,7 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<Root />}>
         <Route index element={<Products />} />
+        <Route path="product" element={<Navigate to={"/"} />}></Route>
         <Route path="product/:id/*" element={<ProductSingle />} />
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />

@@ -51,13 +51,13 @@ async function AuthManager(req, res, next, permission = Object.keys(permissionMa
   noAccessErr.message += ` צריך להיות ` + ["מנהל", "אדמין"][permission - 1] + "."
 
 
-  const { token } = req.cookies;
-  if (!token)
+  const { tokenM } = req.cookies;
+  if (!tokenM)
     return res.status(401).json(noAccessErr);
 
   try {
     //decode token to get its data
-    const decode = jwt.verify(token, process.env.JWT_SECRET);
+    const decode = jwt.verify(tokenM, process.env.JWT_SECRET);
     const manager = await Manager.findById(decode.manager);
 
     if (!manager ||     //make sure user is indeed manager 
@@ -66,7 +66,7 @@ async function AuthManager(req, res, next, permission = Object.keys(permissionMa
 
     //bind manger & token onto request for later use
     req.manager = manager;
-    req.token = token;
+    req.token = tokenM;
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError')

@@ -1,28 +1,26 @@
+import { AiOutlineUser } from "react-icons/ai";
+import { FaUserCircle } from "react-icons/fa";
+import { IoMdLogIn } from "react-icons/io";
+import { FiLogIn, FiLogOut } from "react-icons/fi";
+import { IoMdLogOut } from "react-icons/io";
 import { MdContactSupport } from "react-icons/md";
 import { HiInformationCircle } from "react-icons/hi";
-import { MdOutlineContactSupport } from "react-icons/md";
 import { MdSell } from "react-icons/md";
 import { GiSolarTime } from "react-icons/gi";
-import { HiUsers } from "react-icons/hi";
-import { TbTableOptions } from "react-icons/tb";
-import { BsCardChecklist } from "react-icons/bs";
-import { TbLogout } from "react-icons/tb";
 import { BsFillSunFill } from "react-icons/bs";
 import { BsFillMoonStarsFill } from "react-icons/bs";
 import { CgMenu } from "react-icons/cg";
-import { AiFillShop } from "react-icons/ai";
 import { AiFillHome } from "react-icons/ai";
-import { Flex, Link, Box, Button, Text, HStack, useColorMode, Spacer } from "@chakra-ui/react";
+import { Flex, Link, Box, Button, Text, HStack, useColorMode, Spacer, Tooltip } from "@chakra-ui/react";
 
 if (!localStorage["chakra-ui-color-mode"])
     localStorage["chakra-ui-color-mode"] = "dark"
 
 export default function Nav() {
-    const { logout } = useLogout()
-    const { colorMode, toggleColorMode } = useColorMode();
     const [isOpen, setIsOpen] = useState(true)
     function toggleMenu() { setIsOpen(!isOpen) }
     function closeMenu() { setIsOpen(false) }
+    const { isAuth, user } = useContext(AuthContext)
 
     //get menu height for smooth animation using max height
     const [menuH, setMenuH] = useState(0)
@@ -50,13 +48,13 @@ export default function Nav() {
     }, [])
 
     return (<>
-        <Box onClick={closeMenu} display={["block", "none"]} position={"absolute"} inset="0" zIndex={1} backdropFilter={"blur(0.2em)"}
+        <Box onClick={closeMenu} display={["block", "none"]} position={"absolute"} inset="0" zIndex={2} backdropFilter={"blur(0.2em)"}
             opacity={isOpen ? 1 : 0} pointerEvents={isOpen ? "all" : "none"} transition={"opacity 0.3s"} transitionDelay={(~~!isOpen) * 0.2 + "s"}
-            cursor={"no-drop"} _after={{ content: '""', inset: 0, bg: "purple.900", position: "absolute", opacity: 0.5 }} >
+            cursor={"no-drop"} _after={{ content: '""', inset: 0, bg: "purple.900", position: "absolute", opacity: 0.5, zIndex: 2 }} >
         </Box>
 
-        <NavContainer isOpen={isOpen} zIndex={2} fontSize={["2xl", "xs", "lg", "xl"]}>
-            <MobileMenuIcon {...{ toggleColorMode, colorMode, toggleMenu, isOpen }} />
+        <NavContainer isOpen={isOpen} zIndex={3} fontSize={["2xl", "xs", "lg", "xl"]}>
+            <MobileMenuIcon {...{ toggleMenu, isOpen }} />
             <Flex ref={ref} as="nav" w="max-content"
                 width={["auto", "100%"]}
                 display={"flex"}
@@ -64,9 +62,9 @@ export default function Nav() {
                 flexDirection={["column", "row"]}
                 alignItems={["stretch", "center"]}
                 overflow={"hidden"}
-                mt={["0.5em", 0]}
+                mt={[isOpen ? "0.5em" : 0, 0]}
                 maxHeight={isOpen ? [menuH || "initial", "initial"] : [0, "initial"]} pointerEvents={isOpen ? ["all", "all"] : ["none", "all"]}
-                transition={"max-height 0.3s"} transitionDelay={(~~!isOpen) * 0.2 + "s"}
+                transition={"max-height 0.3s, margin-Top 0.3s"} transitionDelay={(~~!isOpen) * 0.2 + "s"}
             >
 
                 <MenuItem to="/" icon={<AiFillHome size={"1.2em"} />} {...{ closeMenu }}> ראשי</MenuItem>
@@ -76,16 +74,15 @@ export default function Nav() {
                 <MenuItem to="/users" icon={<HiInformationCircle size={"1.2em"} />} {...{ closeMenu }}> עליינו</MenuItem>
 
                 <Spacer display={["none", "block"]} minH={"1em"} />
-                <Flex gap={"0.5em"} mt={["1em", 0]} justifyContent={"left"}>
-                    <Button display={["none", "block"]} onClick={toggleColorMode} variant="outline" colorScheme="black">
-                        {colorMode == "dark" ? <BsFillSunFill /> : <BsFillMoonStarsFill />}
-                    </Button>
-                    <Button onClick={() => { logout() }} colorScheme="gray">
-                        <TbLogout size={"1.7em"} /><Text display={["block", "none"]} ps={"1em"}>התנתק</Text>
-                    </Button>
-                </Flex>
+                <SideButtons toggleMenu={toggleMenu} />
             </Flex>
+            {isAuth &&
+                <Box bg="bg" position={"absolute"} p={"0 0.5em "} borderRadius={"0 0 0.5em 0.5em"}
+                    boxShadow={"md"} bottom={"1px"} transform={"translateY(100%)"} zIndex={-2}
+                >ברוך הבא - {user.name}</Box>
+            }
         </NavContainer>
+
     </>
     )
 }
@@ -103,17 +100,19 @@ function NavContainer({ children, isOpen, zIndex, fontSize }) {
     </Box>
 }
 
-function MobileMenuIcon({ isOpen, toggleMenu, toggleColorMode, colorMode }) {
+function MobileMenuIcon({ isOpen, toggleMenu }) {
+    const { colorMode, toggleColorMode } = useColorMode();
+
     return <Flex display={["flex", "none"]} fontSize={["4xl", "xs", "sm", "lg"]}>
         <Button
-            variant={isOpen ? "ghost" : "outline"}
-            colorScheme="black"
+            variant={"outline"}
+            colorScheme={isOpen ? "red" : ""}
             onClick={toggleMenu} >
             <CgMenu />
         </Button>
         <Spacer></Spacer>
-        <Button onClick={toggleColorMode} variant="outline" colorScheme="black">
-            {colorMode == "dark" ? <BsFillSunFill /> : <BsFillMoonStarsFill />}
+        <Button onClick={toggleColorMode} variant="outline" colorScheme="aqua" p={0}>
+            {colorMode == "dark" ? <BsFillSunFill fontSize={"1.5em"} /> : <BsFillMoonStarsFill fontSize={"1.5em"} />}
         </Button>
     </Flex>
 }
@@ -142,10 +141,46 @@ function MenuItem({ children, to, icon, closeMenu }) {
     </Link>
 }
 
+function SideButtons({ toggleMenu }) {
+    const { colorMode, toggleColorMode } = useColorMode();
+    const { isAuth } = useContext(AuthContext)
+    const navigate = useNavigate()
+    const { logout } = useLogout()
+
+    const isDarkMode = colorMode == "dark";
+
+    function onLoginClick() {
+        if (isAuth)
+            logout();
+        else
+            navigate("/login")
+        toggleMenu()
+
+    }
+
+    return <Flex gap={"0.5em"} mt={["1em", 0]} justifyContent={"left"}>
+        <Tooltip label={isDarkMode ? "פלאש באנג" : "דרק מוד"}>
+            <Button onClick={toggleColorMode} display={["none", "inline-flex"]} variant="outline" colorScheme="aqua" p={0}>
+                {isDarkMode ? <BsFillSunFill size={"1.5em"} /> : <BsFillMoonStarsFill size={"1.5em"} />}
+            </Button>
+        </Tooltip>
+        <Tooltip label={isAuth ? "התנתק" : "התחבר"}>
+            <Button onClick={() => { onLoginClick() }} variant={"outline"} colorScheme={isAuth ? "gray" : "green"} bg={isAuth ? "" : "bgGreen"} p={["1em", 0]}>
+                {isAuth
+                    && <><IoMdLogOut size={"1.5em"} /><AiOutlineUser size={"1.5em"} /><Text display={["block", "none"]} ps={"1em"}>התנתק</Text></>
+                    || <><IoMdLogIn size={"1.5em"} /><AiOutlineUser size={"1.5em"} /><Text display={["block", "none"]} ps={"1em"}>התחבר</Text></>
+                }
+            </Button>
+        </Tooltip>
+    </Flex>
+}
+
 import * as React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import useLogout from "../../hooks/useLogout";
 import { useState } from "react";
 import { useRef } from "react";
 import { useEffect } from "react";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthProvider";
 

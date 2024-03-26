@@ -35,6 +35,8 @@ router.post("/", users.create);
 router.post('/login', users.login);
 router.get('/logout', auth_user, users.logout);
 router.get('/auth', auth_user, users.authUserToken);
+router.post("/resetpassword", managers.reqResetPassword)
+router.post("/resetpassword/verify", managers.useResetPin)
 //users actions
 router.delete('/', auth_user, users.delete);
 router.put('/', auth_user, users.update);

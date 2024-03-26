@@ -1,7 +1,8 @@
 let UserModel = require(`../models/User`);
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const userTokenDuration = 1000 * 60 * 60 * 24 * 4; // 4d
+const userTokenDuration = 1000 * 60 * 60 * 24 * 7; // 4d
+const { requestResetPassword, useResetPin } = require("../utils/otpFlow")
 
 
 module.exports = {
@@ -67,7 +68,7 @@ module.exports = {
       //update tokens list
       await UserModel.findByIdAndUpdate(user._id, { tokens: [...oldTokens, { token, signedAt: Date.now().toString() }] });
 
-      res.cookie("token", token, { "maxAge": managerTokenDuration, httpOnly: true })
+      res.cookie("token", token, { "maxAge": userTokenDuration, httpOnly: true })
 
       return res.status(201).json({
         success: true,
@@ -94,7 +95,7 @@ module.exports = {
       if (!token)
         return res.status(401).json({ success: false, message: 'בשביל להתנתק יש להתחבר תחילה' });
 
-      const tokens = req.user.token;
+      const tokens = req.user.tokens;
       const newTokens = tokens.filter(t => t.token !== token);
 
       await UserModel.findByIdAndUpdate(req.user._id, { tokens: newTokens });
@@ -110,6 +111,14 @@ module.exports = {
         error: error.message,
       });
     }
+  },
+
+  reqResetPassword: async (req, res) => {
+    requestResetPassword(req, res, "user", MangerModel)
+  },
+
+  useResetPin: async (req, res) => {
+    useResetPin(req, res, "user", MangerModel)
   },
 
   //auth current user and re create token

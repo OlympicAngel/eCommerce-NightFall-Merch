@@ -1,5 +1,9 @@
 import { defineStyleConfig, extendTheme } from '@chakra-ui/react'
+import { inputAnatomy } from '@chakra-ui/anatomy'
+import { createMultiStyleConfigHelpers } from '@chakra-ui/react'
 import { mode } from '@chakra-ui/theme-tools';
+const { definePartsStyle, defineMultiStyleConfig } =
+    createMultiStyleConfigHelpers(inputAnatomy.keys)
 
 const theme = extendTheme({
     initialColorMode: 'dark',
@@ -8,7 +12,8 @@ const theme = extendTheme({
         heading: '"Secular One", sans-serif'
     },
     components: {
-        ...defaultScheme(["Button", "Checkbox", "Badge", "Spinner", "Tag", "Checkbox", "Switch", "Slider", "Table", "Popover", "CloseButton", "DrawerCloseButton"], {
+        ...defaultScheme(["Button", "Checkbox", "Badge", "Spinner", "Tag", "Checkbox", "Switch", "Slider", "Table", "Popover",
+            "CloseButton", "PinInput", "DrawerCloseButton"], {
             Button: defineStyleConfig({
                 variants: {
                     solid: {
@@ -57,6 +62,13 @@ const theme = extendTheme({
                         }
                     }
                 }
+            }),
+            Input: defineMultiStyleConfig({
+                baseStyle: definePartsStyle({
+                    field: {
+                        borderColor: ""
+                    }
+                })
             })
         }),
     },
@@ -75,6 +87,27 @@ const theme = extendTheme({
             bg: {
                 default: "#fbf6ff",
                 _dark: "#130e18"
+            },
+
+            bgPurple: {
+                default: "purple.50",
+                _dark: "purple.800"
+            },
+            bgRed: {
+                default: "red.50",
+                _dark: "red.800"
+            },
+            bgOrange: {
+                default: "orange.100",
+                _dark: "orange.700"
+            },
+            bgGreen: {
+                default: "green.50",
+                _dark: "green.900"
+            },
+            bgBlue: {
+                default: "blue.50",
+                _dark: "teal.900"
             },
 
             gray: {
@@ -150,6 +183,18 @@ const theme = extendTheme({
                 700: "#003966",
                 800: "#002d4d",
                 900: "#002233",
+            },
+            aqua: {
+                50: "#d6f7ff",
+                100: "#a2eaff",
+                200: "#85ddff",
+                300: "#62cfff",
+                400: "#4abeff",
+                500: "#38adff",
+                600: "#2e9eff",
+                700: "#238eff",
+                800: "#197fff",
+                900: "#0d6dff",
             },
             orange: {
                 50: "#fff2e6",

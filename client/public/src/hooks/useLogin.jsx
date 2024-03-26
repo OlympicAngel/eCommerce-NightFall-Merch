@@ -4,14 +4,14 @@ import useMutationLogic from "./useMutationLogic";
 
 
 function useLogin() {
-    const { setIsAuth, setManager } = useContext(AuthContext)
+    const { setIsAuth, setUser } = useContext(AuthContext)
 
     const { mutate, isLoading, error, isError } = useMutationLogic({
-        urlPath: "users/managers/login",
+        urlPath: "users/login",
         method: "post",
         onSuccess: (res) => {
             setIsAuth(true)
-            setManager(res.data.manager)
+            setUser(res.data.user)
         }
     })
 

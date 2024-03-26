@@ -7,7 +7,7 @@ function useLogout() {
 
     //create an mutate function that when called it will trigger a logout request
     const { isSuccess, mutate } = useMutationLogic({
-        urlPath: "users/managers/logout",
+        urlPath: "users/logout",
         method: "get",
         onSuccess: () => {
             setIsAuth(false)

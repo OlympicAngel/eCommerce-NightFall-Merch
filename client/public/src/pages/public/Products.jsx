@@ -1,4 +1,4 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Card, Flex, Grid, HStack, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, Skeleton, Spacer, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Grid } from "@chakra-ui/react";
 import useQueryLogic from "../../hooks/useQueryLogic";
 import useTitle from "../../hooks/useTitle";
 import ProductCard from "../../components/Product/ProductCard";
@@ -6,10 +6,11 @@ import ErrorView from "../../components/partials/ErrorView";
 import { Product } from "../../utils/types";
 import RelatedProducts from "../../components/Product/RelatedProducts";
 import { useState } from "react";
-import SearchList, { useSearchLogic } from "../../components/Sorters&Filters/SearchList";
+import { useSearchLogic } from "../../components/Sorters&Filters/SearchList";
 import Pagination, { usePaginationLogic } from "../../components/Sorters&Filters/Pagination";
-import FilterButtons, { FilterBtn } from "../../components/Sorters&Filters/FilterButtons";
-import SortButtons, { SortBtn } from "../../components/Sorters&Filters/SortButtons";
+import { FilterBtn } from "../../components/Sorters&Filters/FilterButtons";
+import { SortBtn } from "../../components/Sorters&Filters/SortButtons";
+import ProductNavbar from "../../components/Product/ProductNavbar";
 
 
 function Products() {
@@ -57,31 +58,7 @@ function Products() {
       <Box><ErrorView error={new Error("אין תוצאות עבור חיפוש זה")} /></Box>
     }
     <ErrorView error={error} />
-
-    <Card position={"sticky"} bottom="1em" zIndex={1} as={HStack} boxShadow="dark-lg" alignItems={"flex-start"} gap={"0.5em"}
-      bg={"gray"} mt={"1em"} p="0.3em">
-      <Accordion w={"100%"} allowToggle >
-        <AccordionItem >
-          <h2>
-            <AccordionButton >
-              <AccordionIcon />
-              <Box as="span" flex='1' textAlign='start'>
-                אפשרויות סינון
-              </Box>
-
-            </AccordionButton>
-          </h2>
-          <AccordionPanel>
-            <SearchList searchLogic={searchLogic} list={products} filteredList={filteredProducts} placeholder="חיפוש לפי שם מוצר, קטגוריה, מחיר, ועוד.." />
-
-            <Flex flexWrap="wrap" w={"100%"} m="0 !important" mt={"1em !important"} gap={["0", "2em"]} justifyContent={"space-between"} flexDir={["column", "row"]}>
-              <FilterButtons filterLogic={filterLogic} />
-              <SortButtons sortLogic={sortLogic} />
-            </Flex>
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
-    </Card>
+    <ProductNavbar {...{ searchLogic, products, filteredProducts, filterLogic, sortLogic }} />
   </>
   )
 }

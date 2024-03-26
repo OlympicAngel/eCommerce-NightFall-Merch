@@ -1,10 +1,9 @@
 let MangerModel = require(`../models/Manager`);
-let OtpModel = require(`../models/Otp`);
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const otpGenerator = require('otp-generator');
-const { userResetPassword } = require("../utils/email");
+
+const { requestResetPassword, useResetPin } = require("../utils/otpFlow")
 
 const managerTokenDuration = 1000 * 60 * 60 * 2; //2H
 
@@ -181,11 +180,11 @@ module.exports = {
       manager.tokens = [...oldTokens, { token, signedAt: Date.now().toString() }];
       await manager.save(); //save token update
 
-      res.cookie("token", token, { "maxAge": managerTokenDuration, httpOnly: true })
+      res.cookie("tokenM", token, { "maxAge": managerTokenDuration, httpOnly: true })
 
       return res.status(201).json({
         message: "התחברת בהצלחה!",
-        token,
+        tokenM: token,
         manager: {
           _id: manager._id,
           name: manager.name,
@@ -206,7 +205,7 @@ module.exports = {
       const tokens = req.manager.tokens;
       const newTokens = tokens.filter(t => t.token !== req.token);
       await MangerModel.findByIdAndUpdate(req.manager._id, { tokens: newTokens }).exec();
-      res.clearCookie("token");
+      res.clearCookie("tokenM");
 
       return res.status(200).json({
         success: true,
@@ -221,91 +220,11 @@ module.exports = {
   },
 
   reqResetPassword: async (req, res) => {
-    let timeLeft;
-    try {
-      const { email } = req.body;
-      if (!email)
-        throw new Error("לא הוזן אימייל")
-
-      const manager = await MangerModel.findOne({ email });
-      if (!manager)
-        throw new Error("אמייל לא קיים במערכת");
-
-      const olderOtp = await OtpModel.findOne({ email });
-      if (olderOtp) {
-        timeLeft = 5 * 60 - (Date.now() - olderOtp.createdAt) / 1000;
-        throw new Error("בקשת איפוס כבר נשלחה כבר למייל שלך, יש לבדוק במייל..");
-      }
-
-      //gen rnd otp
-      let otp;
-      let result = true
-      //cycle until we get an otp that is NOT in out DB
-      while (result) {
-        otp = otpGenerator.generate(6, { "specialChars": false });
-        result = await OtpModel.findOne({ otp: otp });
-      }
-
-      //send email
-      userResetPassword(manager.name, email, otp)
-
-
-      //create new otp
-      const otpObj = OtpModel({
-        email,
-        otp,
-        userType: "manager"
-      })
-      otpObj.save();
-
-      res.status(201).json({
-        success: true,
-        email,
-        message: "קוד איפוס סיסמה נשלח למייל בהצלחה!",
-      })
-
-    } catch (e) {
-      return res.status(401).json({
-        message: "פעולה נכשלה",
-        error: e.message,
-        timeLeft
-      })
-    }
+    requestResetPassword(req, res, "manager", MangerModel)
   },
 
   useResetPin: async (req, res) => {
-    try {
-      const { otp, password } = req.body;
-      if (!otp)
-        throw new Error("לא הוזן קוד איפוס")
-      if (!password)
-        throw new Error("לא הוזנה סיסמה חדשה לאיפוס")
-
-      //get otp and delete after 
-      const otpObj = await OtpModel.findOneAndDelete({ otp, userType: "manager" });
-      if (!otpObj)
-        throw new Error("קוד איפוס לא תקין או פג תוקף")
-
-      //get that manager
-      const manager = await MangerModel.findOne({ email: otpObj.email })
-      if (!manager)
-        throw new Error("המשתמש שמקושר לקוד הזה לא קיים יותר")
-
-      //update the password
-      manager.password = password;
-      await manager.save();
-
-      res.status(201).json({
-        success: true,
-        message: "סיסמה אופסה ועודכנה בהצלחה!"
-      })
-
-    } catch (e) {
-      return res.status(401).json({
-        message: "פעולה נכשלה",
-        error: e.message
-      })
-    }
+    useResetPin(req, res, "manager", MangerModel)
   },
 
   /**
@@ -317,12 +236,12 @@ module.exports = {
   authManagerToken: async (req, res) => {
     try {
       //get token
-      const { token } = req.cookies;
-      if (!token)
+      const { tokenM } = req.cookies;
+      if (!tokenM)
         throw new Error("חסר טוקן משתמש בבקשה לשרת");
 
       //get data stored within token
-      const decode = jwt.verify(token, process.env.JWT_SECRET);
+      const decode = jwt.verify(tokenM, process.env.JWT_SECRET);
 
       //check that that user has permission
       const manager = await MangerModel.findById(decode.manager).exec();
@@ -330,7 +249,7 @@ module.exports = {
         throw new Error("אין לך מספיק גישה בשביל לגשת לפה");
 
       //check that current token is in the allowed tokens of that user (if not that token got logged out)
-      const status = manager.tokens.some((t) => t.token == token)
+      const status = manager.tokens.some((t) => t.token == tokenM)
       if (!status)
         throw new Error("משתמש זה נותק - יש להתחבר מחדש")
 
@@ -339,18 +258,18 @@ module.exports = {
       let payload = { manager: manager._id };
       const new_token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: managerTokenDuration });
       //filter out older (current)token
-      const updatedTokens = manager.tokens.filter((t) => t.token !== token);
+      const updatedTokens = manager.tokens.filter((t) => t.token !== tokenM);
       await MangerModel.findByIdAndUpdate(manager._id, {
         tokens: [...updatedTokens, { token: new_token, signedAt: Date.now().toString() }],
       }).exec();
 
       //send new token to client
-      res.cookie("token", new_token, { "maxAge": managerTokenDuration, httpOnly: true })
+      res.cookie("tokenM", new_token, { "maxAge": managerTokenDuration, httpOnly: true })
 
       return res.status(201).json({
         success: true,
         message: "משתמש אומת",
-        token: new_token,
+        tokenM: new_token,
         manager: {
           _id: manager._id,
           name: manager.name,
@@ -360,7 +279,7 @@ module.exports = {
       });
     } catch (error) {
       //force delete token to prevent all steps above next time
-      res.clearCookie("token");
+      res.clearCookie("tokenM");
 
       return res.status(401).json({
         message: "unauthorized",

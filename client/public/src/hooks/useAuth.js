@@ -12,7 +12,7 @@ function useAuth() {
 
     const { isSuccess } = useQuery({
         queryKey: ["auth"],
-        queryFn: async () => await axios.get(SERVER + "users/managers/auth", { withCredentials: true }),
+        queryFn: async () => await axios.get(SERVER + "users/auth", { withCredentials: true }),
         //prevent any form of refetch
         refetchOnMount: false,
         refetchOnWindowFocus: false,
