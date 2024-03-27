@@ -39,9 +39,6 @@ function Products() {
     .sort(sortLogic.sortFn);
   const displayProducts = paginationLogic.sliceList(filteredProducts);
 
-  //TODO: pagination? sorts
-
-  //TODO: handle pop over?
   return (<>
     <Pagination {...{ list: filteredProducts, paginationLogic, colorScheme: "gray" }} />
 

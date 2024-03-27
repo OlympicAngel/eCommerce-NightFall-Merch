@@ -114,11 +114,11 @@ module.exports = {
   },
 
   reqResetPassword: async (req, res) => {
-    requestResetPassword(req, res, "user", MangerModel)
+    requestResetPassword(req, res, "user", UserModel)
   },
 
   useResetPin: async (req, res) => {
-    useResetPin(req, res, "user", MangerModel)
+    useResetPin(req, res, "user", UserModel)
   },
 
   //auth current user and re create token
