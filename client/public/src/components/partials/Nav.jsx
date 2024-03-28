@@ -1,3 +1,5 @@
+import { MdCategory } from "react-icons/md";
+import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
 import { AiOutlineUser } from "react-icons/ai";
 import { FaUserCircle } from "react-icons/fa";
 import { IoMdLogIn } from "react-icons/io";
@@ -11,7 +13,7 @@ import { BsFillSunFill } from "react-icons/bs";
 import { BsFillMoonStarsFill } from "react-icons/bs";
 import { CgMenu } from "react-icons/cg";
 import { AiFillHome } from "react-icons/ai";
-import { Flex, Link, Box, Button, Text, HStack, useColorMode, Spacer, Tooltip } from "@chakra-ui/react";
+import { Flex, Link, Box, Button, Text, HStack, useColorMode, Spacer, Tooltip, Divider } from "@chakra-ui/react";
 
 if (!localStorage["chakra-ui-color-mode"])
     localStorage["chakra-ui-color-mode"] = "dark"
@@ -68,10 +70,9 @@ export default function Nav() {
             >
 
                 <MenuItem to="/" icon={<AiFillHome size={"1.2em"} />} {...{ closeMenu }}> ראשי</MenuItem>
-                <MenuItem to="/orders" icon={<GiSolarTime size={"1.6em"} />} {...{ closeMenu }}>  חדש</MenuItem>
-                <MenuItem to="/products" icon={<MdSell size={"1.2em"} />} {...{ closeMenu }}> הכי נמכר</MenuItem>
-                <MenuItem to="/categories" icon={<MdContactSupport size={"1.2em"} />} {...{ closeMenu }}> צור קשר</MenuItem>
-                <MenuItem to="/users" icon={<HiInformationCircle size={"1.2em"} />} {...{ closeMenu }}> עליינו</MenuItem>
+                <MenuItem to="/random" reloadDocument icon={<GiPerspectiveDiceSixFacesRandom size={"1.5em"} />} {...{ closeMenu }}>מוצר אקראי</MenuItem>
+                <MenuItem to="/contact" icon={<MdContactSupport size={"1.2em"} />} {...{ closeMenu }}> צור קשר</MenuItem>
+                <MenuItem to="/about" icon={<HiInformationCircle size={"1.2em"} />} {...{ closeMenu }}> עליינו</MenuItem>
 
                 <Spacer display={["none", "block"]} minH={"1em"} />
                 <SideButtons toggleMenu={toggleMenu} />
@@ -79,7 +80,9 @@ export default function Nav() {
             {isAuth &&
                 <Box bg="bg" position={"absolute"} p={"0 0.5em "} borderRadius={"0 0 0.5em 0.5em"}
                     boxShadow={"md"} bottom={"1px"} transform={"translateY(100%)"} zIndex={-2}
-                >ברוך הבא - {user.name}</Box>
+                >ברוך הבא,
+                    {user.name} |<Link as={NavLink} alt="פרופיל משתמש" to="/profile" fontSize={"0.75em"} opacity={"0.7"} ms={"0.5em"}>פרופיל</Link>
+                </Box>
             }
         </NavContainer>
 
@@ -94,7 +97,7 @@ function NavContainer({ children, isOpen, zIndex, fontSize }) {
         w="100%"
         bg="bg"
         p="0.5em"
-        boxShadow="xl"
+        boxShadow="2xl"
         fontSize={fontSize}>
         {children}
     </Box>
@@ -117,7 +120,7 @@ function MobileMenuIcon({ isOpen, toggleMenu }) {
     </Flex>
 }
 
-function MenuItem({ children, to, icon, closeMenu }) {
+function MenuItem({ children, to, reloadDocument, icon, closeMenu }) {
 
     const active = {
         color: "gold",
@@ -128,7 +131,7 @@ function MenuItem({ children, to, icon, closeMenu }) {
         }
     };
 
-    return <Link style={({ isActive }) => isActive ? active : {}}
+    return <Link style={({ isActive }) => isActive ? active : {}} reloadDocument={reloadDocument}
         borderRadius={"0.5em"} transition={"0.3s background, 0.3s color"}
         color="high.blue" fontWeight={900}
         as={NavLink} to={to} onClick={closeMenu} p="0.2em 0.5em">
