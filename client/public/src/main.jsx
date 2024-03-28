@@ -13,8 +13,6 @@ import "./style.css"
 import CartProvider from "./context/CartProvider.jsx";
 import RealTimeData from "./context/RealTimeData.jsx";
 
-/sfsdf/g
-
 const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById("root")).render(
