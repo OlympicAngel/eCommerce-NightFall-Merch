@@ -1,29 +1,41 @@
 import {
-  createBrowserRouter, RouterProvider, Route, createRoutesFromElements, Navigate
+  createBrowserRouter, RouterProvider, Route, createRoutesFromElements, Navigate, Outlet
 } from "react-router-dom";
-import { lazy } from "react";
+import { lazy, useContext } from "react";
 import Root from "./pages/public/Root";
+import { AuthContext } from "./context/AuthProvider";
+import useAuth from "./hooks/useAuth";
 
 const About = lazy(() => import('./pages/public/About'))
-const Contact = lazy(() => import('./pages/public/Contact'))
-const Register = lazy(() => import('./pages/public/Register'))
 const Login = lazy(() => import('./pages/public/Login'))
 const Products = lazy(() => import('./pages/public/Products'))
 const ProductSingle = lazy(() => import('./pages/public/ProductSingle'))
+const Random = lazy(() => import("./pages/public/Random"))
+
 const Orders = lazy(() => import('./pages/private/Orders'))
+const Profile = lazy(() => import('./pages/private/Profile'))
+
+
+const LoginRegister = <Login />;
 
 function App() {
+  const { isAuth } = useContext(AuthContext)
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Root />}>
         <Route index element={<Products />} />
         <Route path="product" element={<Navigate to={"/"} />}></Route>
         <Route path="product/:id/*" element={<ProductSingle />} />
+        <Route path="random/*" element={<Random />} />
         <Route path="about" element={<About />} />
-        <Route path="contact" element={<Contact />} />
-        <Route path="register" element={<Register />} />
-        <Route path="login" element={<Login />} />
-        <Route path="orders" element={<Orders />} />
+        <Route path="register" element={LoginRegister} />
+        <Route path="login" element={LoginRegister} />
+
+        <Route element={isAuth ? null : <Navigate to={"/login"} />}>
+          <Route path="profile" element={<Profile />} />
+          <Route path="orders" element={<Orders />} />
+        </Route>
       </Route>
     )
   )

@@ -32,6 +32,7 @@ import { useContext, useEffect, useState } from 'react';
 import { CartContext } from '../../context/CartProvider';
 import BuyButton from '../BuyButton';
 import { AuthContext } from '../../context/AuthProvider';
+import { Link } from "react-router-dom";
 
 
 function CartView({ toggleOpen }) {
@@ -70,7 +71,7 @@ function CartView({ toggleOpen }) {
                     </Heading>
                 </DrawerHeader>
                 <DrawerBody p="0">
-                    <Alert status='warning' variant='left-accent' pe={"0.2em"}>
+                    <Alert status={!isAuth ? 'warning' : "success"} variant='left-accent' pe={"0.2em"}>
                         <AlertIcon as={FaUserAltSlash} />
                         <AlertTitle flex="0.3">
                             {!isAuth ? "משתמש לא מחובר!" : "משתמש מחובר!"}
@@ -80,7 +81,15 @@ function CartView({ toggleOpen }) {
                                 ` תוכל בכל זאת לקנות כאורח אך מעקב ההזמנה לא יופיע בפרופיל שלך `
                                 :
                                 ` לאחר הרכישה תוכל לעקוב על ההזמנה בפרופיל האישי שלך `}
-                            {!isAuth ? <FaSadTear size={"1.5em"} style={{ verticalAlign: "middle", display: "inline" }} /> : <BsEmojiSmileFill size={"1.5em"} style={{ verticalAlign: "middle", display: "inline" }} />}
+                            {!isAuth ?
+                                <>
+                                    <FaSadTear size={"1.5em"} style={{ verticalAlign: "middle", display: "inline" }}
+                                    /> <a href={"/login"} alt="התחברות">
+                                        <Button variant={"link"} colorScheme="green">התחבר למשתמש</Button>
+                                    </a>
+                                </>
+                                :
+                                <BsEmojiSmileFill size={"1.5em"} style={{ verticalAlign: "middle", display: "inline" }} />}
                         </AlertDescription>
                     </Alert>
                     <CartItems />

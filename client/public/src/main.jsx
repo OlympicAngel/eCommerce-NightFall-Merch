@@ -13,6 +13,7 @@ import "./style.css"
 import CartProvider from "./context/CartProvider.jsx";
 import RealTimeData from "./context/RealTimeData.jsx";
 
+/sfsdf/g
 
 const queryClient = new QueryClient()
 
@@ -20,7 +21,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <ChakraProvider theme={theme}>
     <AuthProvider>
       <RealTimeData>
-
         <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT, "currency": "ILS" }}>
           <CartProvider>
             <QueryClientProvider client={queryClient}>

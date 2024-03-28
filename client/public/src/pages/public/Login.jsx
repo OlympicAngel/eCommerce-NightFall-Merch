@@ -1,14 +1,15 @@
 import { SiLetsencrypt } from "react-icons/si";
 import { BiLogInCircle } from "react-icons/bi";
 import { MdOutlineLockReset } from "react-icons/md";
-import { Avatar, Box, Button, Card, Flex, HStack, Text, VStack } from "@chakra-ui/react";
+import { Avatar, Box, Button, Card, Flex, HStack, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Text, VStack, useDisclosure } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthProvider.jsx";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useTitle from "../../hooks/useTitle";
 import ResetPasswordForm from "../../components/forms/ResetPasswordForm.jsx";
 import ResetPinsForm from "../../components/forms/ResetPinsForm.jsx";
 import LoginForm from "../../components/forms/LoginForm.jsx";
+import RegisterForm from "../../components/forms/RegisterForm.jsx";
 
 function Login() {
   useTitle("התחברות משתמש")
@@ -31,6 +32,8 @@ function Login() {
       {page == "pins" && <PinView setPage={setPage} email={email} />}
     </Flex>
     <Button as={Link} fontSize={"1.5em"} colorScheme="blue" className="button" to={"/register"}>עדיין לא רשום?</Button>
+
+    <Register />
   </Card>
 
 }
@@ -87,4 +90,36 @@ function PinView({ setPage }) {
     </VStack>
 
   </>
+}
+
+function Register() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const { isOpen, onOpen, onClose: promptClose } = useDisclosure()
+  function onClose() {
+    navigate("/login")
+    promptClose();
+  }
+
+  useEffect(() => {
+    if (location.pathname != "/login")
+      onOpen()
+
+  }, [location])
+
+  return (
+    <>
+      <Modal isOpen={isOpen} onClose={onClose} >
+        <ModalOverlay />
+        <ModalContent maxW="2xl">
+          <ModalHeader><Heading>הרשמה:</Heading></ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <RegisterForm onClose={onClose} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  )
 }

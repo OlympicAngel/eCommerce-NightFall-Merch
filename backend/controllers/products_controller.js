@@ -46,6 +46,24 @@ module.exports = {
     }
   },
 
+  getRandom: async (req, res) => {
+    try {
+      let product = (await ProductModel.aggregate().sample(1)).pop()
+      product = await ProductModel.populate(product, { path: "category" })
+
+      return res.status(200).json({
+        success: true,
+        message: `רשימת מוצרים נשלפה בהצלחה`,
+        product,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: `לא היה ניתן לשלוף את המוצרים`,
+        error: error.message,
+      });
+    }
+  },
+
   // /**returns related products by id */
   getRelatedByID: async (req, res) => {
     try {

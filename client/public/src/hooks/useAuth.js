@@ -6,7 +6,7 @@ import { toastError } from "../utils/toast.helper";
 import { useToast } from "@chakra-ui/react";
 
 function useAuth() {
-    const { setIsAuth, SERVER, setManager } = useContext(AuthContext);
+    const { setIsAuth, SERVER, setUser } = useContext(AuthContext);
     const toast = useToast();
     const [isLoading, setIsLoading] = useState(true)
 
@@ -18,9 +18,9 @@ function useAuth() {
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
         retry: false,
-        select: (res) => res.data.manager, //filter response data
-        onSuccess: (manager) => {
-            setManager(manager) //save manager details
+        select: (res) => res.data.user, //filter response data
+        onSuccess: (user) => {
+            setUser(user) //save user details
             setIsAuth(true)
             setIsLoading(false)
         },

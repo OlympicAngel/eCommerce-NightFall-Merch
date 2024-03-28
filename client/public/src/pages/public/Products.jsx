@@ -1,4 +1,4 @@
-import { Box, Grid } from "@chakra-ui/react";
+import { Box, Grid, Image } from "@chakra-ui/react";
 import useQueryLogic from "../../hooks/useQueryLogic";
 import useTitle from "../../hooks/useTitle";
 import ProductCard from "../../components/Product/ProductCard";
@@ -11,6 +11,7 @@ import Pagination, { usePaginationLogic } from "../../components/Sorters&Filters
 import { FilterBtn } from "../../components/Sorters&Filters/FilterButtons";
 import { SortBtn } from "../../components/Sorters&Filters/SortButtons";
 import ProductNavbar from "../../components/Product/ProductNavbar";
+import Loader from "../../components/partials/Loader";
 
 
 function Products() {
@@ -23,7 +24,6 @@ function Products() {
     urlPath: "products",
   })
   const displayedCategories = Array.from(new Map(products?.map(p => [p.category._id, p.category]).values())).map(i => i[1])
-
 
   /** @type {Product}  handles when a products gets into cart - show related*/
   const [relatedToProduct, setRelatedToProduct] = useState()
@@ -41,21 +41,21 @@ function Products() {
 
   return (<>
     <Pagination {...{ list: filteredProducts, paginationLogic, colorScheme: "gray" }} />
-
     <Grid className="grid">
-      {(displayProducts || Array(6).fill(undefined))?.map((p, i) => {
+      {(!isLoading ? displayProducts : Array(6).fill(undefined))?.map((p, i) => {
         return <ProductCard key={p?._id || Math.random()} product={p} onAddToCart={setRelatedToProduct}>
-          {relatedToProduct == p &&
+          {!isLoading && relatedToProduct == p &&
             <RelatedProducts product={relatedToProduct} bg="gray" boxShadow="inset -100vmax 0 rgba(0,0,0,0.15)" />
           }
         </ProductCard>
       })}
     </Grid>
-    {displayProducts.length == 0 &&
+    {displayProducts.length == 0 && products &&
       <Box><ErrorView error={new Error("אין תוצאות עבור חיפוש זה")} /></Box>
     }
     <ErrorView error={error} />
-    <ProductNavbar {...{ searchLogic, products, filteredProducts, filterLogic, sortLogic }} />
+    {products && <ProductNavbar {...{ searchLogic, products, filteredProducts, filterLogic, sortLogic }} />
+    }
   </>
   )
 }

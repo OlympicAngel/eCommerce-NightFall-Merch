@@ -8,7 +8,6 @@ body {
 #root {
     display: flex;
     flex-direction: column;
-    gap: 2em;
     min-height: inherit;
 }
 

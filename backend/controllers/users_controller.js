@@ -75,9 +75,10 @@ module.exports = {
         message: "התחברת בהצלחה!",
         token,
         user: {
-          _id: user._id,
           name: user.name,
           email: user.email,
+          phone: user.phone,
+          address: user.address,
         },
       });
     } catch (error) {
@@ -146,8 +147,8 @@ module.exports = {
       let payload = { user: user._id };
       const new_token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: userTokenDuration });
       //filter out older (current)token
-      const updatedTokens = manager.tokens.filter((t) => t.token !== token);
-      await MangerModel.findByIdAndUpdate(manager._id, {
+      const updatedTokens = user.tokens.filter((t) => t.token !== token);
+      await UserModel.findByIdAndUpdate(user._id, {
         tokens: [...updatedTokens, { token: new_token, signedAt: Date.now().toString() }],
       });
 
@@ -159,10 +160,12 @@ module.exports = {
         message: "משתמש אומת",
         token: new_token,
         user: {
-          _id: user._id,
           name: user.name,
-          email: user.email
-        },
+          email: user.email,
+          phone: user.phone,
+          address: user.address,
+          cart: user.cart
+        }
       });
     } catch (error) {
       //force delete token to prevent all steps above next time
@@ -187,11 +190,18 @@ module.exports = {
 
       //limit the fields use can change as we can not trust the input (use might attempt to change token etc..)
       let { address, phone, password, email, name } = req.body
-      await UserModel.findByIdAndUpdate(id, { address, phone, password, email, name });
+      let user = await UserModel.findByIdAndUpdate(id, { address, phone, password, email, name });
+      user = { ...user, ...{ address, phone, password, email, name } }
 
       return res.status(200).json({
         success: true,
         message: `המשתמש עודכן בהצלחה`,
+        user: {
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          address: user.address,
+        }
       });
     } catch (error) {
       return res.status(500).json({
@@ -209,6 +219,8 @@ module.exports = {
         throw new Error("לא התקבל מזהה משתמש תקין");
 
       await UserModel.findByIdAndDelete(id);
+
+      res.clearCookie("token");
 
       return res.status(200).json({
         success: true,
