@@ -24,8 +24,6 @@ function Footer() {
     const { isAuth } = useContext(AuthContext)
     const { OpenCart } = useContext(CartContext)
 
-    //TODO: handel all links destinations
-
     return (
         <Box as={"nav"} bg="gray" p={["0.5em", "1em"]} borderTop={"solid 0.2em gray"} mt={"2em"}>
             <Flex as={Container} maxW="4xl" gap={"1em"} flexWrap={"wrap"} justifyContent={["center", "space-between"]}>
@@ -33,7 +31,6 @@ function Footer() {
                 <FooterSection title="ניווט באתר">
                     <FooterLink to={"/"} text={"מוצרים"} icon={<BiListUl />} />
                     <FooterLink to={"/random"} text={"מוצר אקראי"} icon={<BiDice3 />} />
-                    <FooterLink to={"/contact"} text={"צור קשר"} icon={<FiHelpCircle />} />
                     <FooterLink to={"/about"} text={"עלינו"} icon={<BiInfoCircle />} />
                 </FooterSection>
 

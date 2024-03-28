@@ -1,10 +1,11 @@
 import { Box, Card, Heading, Text } from "@chakra-ui/react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
+import useTitle from "../../hooks/useTitle";
 
 
 function About() {
 
-
+  useTitle("עלינו")
 
 
   return (

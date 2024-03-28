@@ -3,6 +3,8 @@
 const { justCheck } = require("../middlewares/auth_user");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const User = require("../models/User");
+
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = process.env.NODE_ENV == "production" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
@@ -42,22 +44,27 @@ const generateAccessToken = async () => {
 */
 
 async function fillOrderWithProduct(cart) {
-    //create set and fill it with all the different id's of products - only getting unique ids
-    const prodID_set = new Set();
-    cart.forEach(item => prodID_set.add(item.product))
+    try {
+        //create set and fill it with all the different id's of products - only getting unique ids
+        const prodID_set = new Set();
+        cart.forEach(item => prodID_set.add(item.product))
 
-    //get all products for server and hook it to shop cart we got from user
-    const productList = await Product.find({ '_id': { $in: [...prodID_set] } })
-    cart.forEach(item => ({
-        product: item.product,
-        quantity: ~~item.quantity, //round it if user sent us not whole number
-        ref: productList.find(p => p.id == item.product)
-    }))
-    //remove all items that might be user malformed OR not exist anymore (in case of really old cart?)
-    const filteredCart = cart.filter(item => item.ref != undefined && !isNaN(item.quantity))
+        //get all products for server and hook it to shop cart we got from user
+        const productList = await Product.find({ '_id': { $in: [...prodID_set] } })
+        const serverMap = cart.map(item => ({
+            product: item.product,
+            quantity: ~~item.quantity, //round it if user sent us not whole number
+            ref: productList.find(p => p.id == item.product)
+        }))
+        //remove all items that might be user malformed OR not exist anymore (in case of really old cart?)
+        const filteredCart = serverMap.filter(item => item.ref != undefined && !isNaN(item.quantity))
 
-    let isCartError = filteredCart.length != cart.length
-    return { filteredCart, isCartError }
+        let isCartError = filteredCart.length != cart.length
+        return { filteredCart, }
+    }
+    catch (e) {
+        return { isCartError: true }
+    }
 }
 
 /**
@@ -231,8 +238,12 @@ const captureOrderLogic = async (orderID) => {
             order.status = 2;
             order.expireAt = null
             await order.save();
+
+            if (order.user)
+                await User.findByIdAndUpdate(order.user, { $inc: { 'orders': 1 } })
         }
     }
+
     return orderResponseObj;
 };
 
@@ -265,10 +276,9 @@ module.exports = {
             const { filteredCart, isCartError } = await fillOrderWithProduct(cart)
             if (isCartError)
                 return res.status(401).json({
-                    message: `שינויים בסל הקניות!`,
+                    message: `סל הקניות שלך עבר איפוס!`,
                     cartChanged: true,
-                    newCart: filteredCart,
-                    error: "בוצעו שינויים בסל הקניות שלך - בדוק אותם ובצע שוב.."
+                    error: "כי הוא מכיל מוצרים עם מידע ישן.."
                 })
 
             //try to import user from request - if any

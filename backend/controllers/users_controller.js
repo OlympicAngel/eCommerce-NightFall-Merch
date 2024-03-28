@@ -164,7 +164,6 @@ module.exports = {
           email: user.email,
           phone: user.phone,
           address: user.address,
-          cart: user.cart
         }
       });
     } catch (error) {
@@ -243,7 +242,6 @@ module.exports = {
           throw new Error("לא התקבל מזהה משתמש תקין");
 
         const user = await UserModel.findById(id).populate([
-          //"cart",
           "orders.order",
         ]).exec();
 

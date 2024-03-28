@@ -1,4 +1,4 @@
-import { FaShekelSign } from "react-icons/fa";
+import { FaShekelSign, FaUserAlt } from "react-icons/fa";
 import { FaSadTear } from "react-icons/fa";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { AiFillSmile } from "react-icons/ai";
@@ -72,7 +72,7 @@ function CartView({ toggleOpen }) {
                 </DrawerHeader>
                 <DrawerBody p="0">
                     <Alert status={!isAuth ? 'warning' : "success"} variant='left-accent' pe={"0.2em"}>
-                        <AlertIcon as={FaUserAltSlash} />
+                        <AlertIcon as={FaUserAlt} />
                         <AlertTitle flex="0.3">
                             {!isAuth ? "משתמש לא מחובר!" : "משתמש מחובר!"}
                         </AlertTitle>

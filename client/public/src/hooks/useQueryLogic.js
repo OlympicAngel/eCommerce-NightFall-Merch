@@ -21,11 +21,8 @@ export function useQueryLogic({ key, urlPath, select, extra = {} }) {
 
     //cancel signal when component dismount (used if request hasn't completed yet)
     const controller = new AbortController();
-    useEffect(() => {
-        return () => controller.abort()
-    }, [])
 
-    return useQuery({
+    const res = useQuery({
         queryKey: keys,
         queryFn: async () => axios.get(SERVER + urlPath, { withCredentials: true, signal: controller.signal }),
         select: (res) => select ? select(res) : res.data[key.split("_")[0]],
@@ -34,6 +31,12 @@ export function useQueryLogic({ key, urlPath, select, extra = {} }) {
         retry: 0,
         ...extra
     })
+
+    useEffect(() => {
+        return () => res.isLoading && controller.abort()
+    }, [])
+
+    return res;
 }
 
 export default useQueryLogic

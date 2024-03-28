@@ -39,7 +39,7 @@ function UserRow({ user, setShowUser, setEditUser }) {
         <Td maxW={"15vw"} textOverflow={"ellipsis"} overflow={"hidden"} style={{ direction: "ltr" }} display={["none", "table-cell"]}>{user.email}</Td>
         <Td>{user.phone}</Td>
         <Td maxW={"15vw"} textOverflow={"ellipsis"} overflow={"hidden"}>{user.address.city}</Td>
-        <Td textAlign="center">x {user.orders.length}</Td>
+        <Td textAlign="center">x {user.orders}</Td>
         <Td>
             <Flex gap={["0.5em", "1em"]}>
                 <Button px={["0.3em", "1em"]} colorScheme="orange" onClick={() => { setEditUser(user) }} >

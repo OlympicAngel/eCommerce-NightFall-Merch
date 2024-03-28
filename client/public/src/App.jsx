@@ -11,8 +11,8 @@ const Login = lazy(() => import('./pages/public/Login'))
 const Products = lazy(() => import('./pages/public/Products'))
 const ProductSingle = lazy(() => import('./pages/public/ProductSingle'))
 const Random = lazy(() => import("./pages/public/Random"))
+const OrderView = lazy(() => import('./pages/public/OrderView'))
 
-const Orders = lazy(() => import('./pages/private/Orders'))
 const Profile = lazy(() => import('./pages/private/Profile'))
 
 
@@ -31,10 +31,10 @@ function App() {
         <Route path="about" element={<About />} />
         <Route path="register" element={LoginRegister} />
         <Route path="login" element={LoginRegister} />
+        <Route path="order/:orderID" element={<OrderView />} />
 
         <Route element={isAuth ? null : <Navigate to={"/login"} />}>
           <Route path="profile" element={<Profile />} />
-          <Route path="orders" element={<Orders />} />
         </Route>
       </Route>
     )

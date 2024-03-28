@@ -5,6 +5,7 @@ module.exports = async (req, res, next) => {
   const noAccessErr = { success: false, message: "אין גישה!" }
 
   const { token } = req.cookies;
+
   if (!token)
     return res ? res.status(401).json(noAccessErr) : next();
 

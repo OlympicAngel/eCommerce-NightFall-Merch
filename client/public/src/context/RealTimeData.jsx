@@ -31,8 +31,6 @@ function RealTimeData({ children }) {
     }, []);
 
 
-    //TODO testings
-
     //handle login/logout
     useEffect(() => {
         //if user just logged in

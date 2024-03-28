@@ -1,5 +1,6 @@
 const OrderModel = require(`../models/Order`);
 
+
 module.exports = {
     guests: {
         //get order by id ONLY IF it doesnt have user associated with it (to prevent privacy leak)
@@ -19,8 +20,9 @@ module.exports = {
             }
             try {
                 const id = req.params.id;
-                const order = await OrderModel.find({ id, user: { $exists: false } }).populate(['user', 'products.product']).exec();
-                delete order.user;
+                const order = await OrderModel.findOne({ _id: id, user: { $exists: false } }).populate(['products.product']).exec();
+                if (!order)
+                    throw new Error("הזמנה לא נמצאה")
 
                 //censor user data
                 order.customer.name = censorWord(order.customer.name);
@@ -50,7 +52,7 @@ module.exports = {
         getAll: async (req, res) => {
             try {
                 const id = req.user
-                const orders = await OrderModel.find(id).populate(['user', 'products.product']).exec();
+                const orders = await OrderModel.find({ user: id }).populate(['products.product']).exec();
                 return res.status(200).json({
                     success: true,
                     message: `הזמנות נשלפו בהצלחה`,
@@ -68,7 +70,10 @@ module.exports = {
             try {
                 const id = req.params.id;
                 const user = req.user;
-                const order = await OrderModel.find({ id, user }).populate(['user', 'products.product']).exec();
+                const order = await OrderModel.findOne({ _id: id, user }).populate(['products.product']).exec();
+                if (!order)
+                    throw new Error("הזמנה זו לא קיימת עבור משתמש זה")
+
                 return res.status(200).json({
                     success: true,
                     message: `הזמנה נשלפה בהצלחה`,

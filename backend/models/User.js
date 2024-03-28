@@ -39,18 +39,10 @@ const User = new Schema({
             trim: true
         },
     },
-    cart: {
-        type: mongoose.Types.ObjectId,
-        ref: 'carts'
+    orders: {
+        type: Number,
+        default: 0
     },
-    orders: [
-        {
-            order: {
-                type: mongoose.Types.ObjectId,
-                ref: 'orders'
-            }
-        }
-    ],
     tokens: [{ type: Object }]
 })
 

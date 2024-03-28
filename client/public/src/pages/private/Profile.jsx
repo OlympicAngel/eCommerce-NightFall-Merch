@@ -1,15 +1,18 @@
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 import React from 'react';
-import { Flex, Heading, Text, Icon, Divider, Button, Tooltip, Card, Thead, Tr, Th, Tbody, Td, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverBody, PopoverHeader, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, useDisclosure } from '@chakra-ui/react';
+import { Flex, Heading, Text, Icon, Divider, Button, Tooltip, Card, Thead, Tr, Th, Tbody, Td, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverBody, PopoverHeader, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, useDisclosure, Box } from '@chakra-ui/react';
 import { MdEdit, MdDelete } from 'react-icons/md';
 import DynTable from "../../components/partials/DynTable";
 import useMutationLogic from "../../hooks/useMutationLogic";
-import useLogout from "../../hooks/useLogout";
 import { useNavigate } from "react-router-dom";
 import RegisterForm from "../../components/forms/RegisterForm";
+import OrdersList from "../../components/orders/OrdersList";
+import useTitle from "../../hooks/useTitle";
 
 function Profile() {
+    useTitle("פרופיל")
+
     const { user, setUser, setIsAuth } = useContext(AuthContext)
     const navigate = useNavigate()
 
@@ -46,6 +49,11 @@ function Profile() {
             <UserProfileHeader handleDelete={handleDelete} openEdit={openEdit} />
             <Divider mb={6} />
             <UserProfileBody user={user} />
+
+            <Box as="section" bg={"gray"} p={["0.25em", "1em"]} borderRadius={"0.5em"} mt={"1em"}>
+                <Heading>הזמנות:</Heading>
+                <OrdersList />
+            </Box>
         </Card>
     </>
     );
@@ -54,8 +62,8 @@ function Profile() {
 const UserProfileHeader = ({ handleDelete, openEdit }) => {
     return (
         <Flex alignItems="center" justifyContent="space-between" mb={4} flexWrap={"wrap"} gap={"1em"}>
-            <Heading as="h1" fontSize="2xl">
-                פרופיל משתמש
+            <Heading as="h1">
+                פרופיל משתמש:
             </Heading>
             <Flex gap={"1em"} flex={[1, 0]} justifyContent={"space-around"}>
                 <Tooltip label="ערוך פרופיל">

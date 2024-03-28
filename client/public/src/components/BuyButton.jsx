@@ -7,6 +7,8 @@ import { AuthContext } from "../context/AuthProvider";
 import { toastError, toastSuccess } from "../utils/toast.helper";
 import Loader from "./partials/Loader";
 import { CartItem } from "../utils/types";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 
 function BuyButton(props) {
@@ -28,7 +30,7 @@ function BuyButton(props) {
         let cycles = 0;
         let inter;
         const update = () => {
-            const height = containerRef.current.scrollHeight;
+            const height = containerRef.current?.scrollHeight;
             if (initialHeight == height) { //if no change in height
                 if (updated > 5) //if already changed once - stop loop
                     clearInterval(inter)
@@ -106,14 +108,14 @@ function BuyButton(props) {
  */
 function genOrder(updateSize, setCreatingOrder) {
     const toast = useToast()
-    const { cartItems } = useContext(CartContext)
+    const { cartItems, resetCart } = useContext(CartContext)
     const { SERVER } = useContext(AuthContext)
 
     return async function createOrder(data, actions) {
         setCreatingOrder(true)
         try {
             //send the cart items to the server - then the server calls paypal and creates the order itself so users cant(easily) edit it at their side
-            const res = await axios.post(`${SERVER}orders/api/create`, { cart: cartItems })
+            const res = await axios.post(`${SERVER}orders/api/create`, { cart: cartItems }, { withCredentials: true })
             const orderData = res.data;
 
             //if we got an id - all good - return it to the button component
@@ -131,13 +133,11 @@ function genOrder(updateSize, setCreatingOrder) {
                 throw new Error(errorMessage);
             }
         } catch (e) {
-            console.log(e)
             if (e?.response?.data?.noCart) {
-                //TODO: handle no cart error {noCart: true}
+                toastError(new Error("לא היה ניתן לבצע הזמנה כי אין מוצרים בסל"), toast)
             } else if (e?.response?.data?.cartChanged) {
                 /** @type {CartItem[]} */
-                const { newCart } = e.response.data;
-                //TODO: show message and possibly compare whats changed
+                resetCart();
             }
             toastError(e, toast);
         } finally {
@@ -149,13 +149,13 @@ function genOrder(updateSize, setCreatingOrder) {
 
 function genApprove() {
     const toast = useToast()
-    const { resetCart } = useContext(CartContext)
-    const { SERVER } = useContext(AuthContext)
+    const { resetCart, OpenCart } = useContext(CartContext);
+    const { SERVER } = useContext(AuthContext);
+    const queryClient = useQueryClient();
 
     return async function (data, actions) {
         try {
-            console.log(data)
-            const response = await axios.post(`${SERVER}orders/api/${data.orderID}/capture`)
+            const response = await axios.post(`${SERVER}orders/api/${data.orderID}/capture`, { withCredentials: true })
             const orderData = response.data;
             // Three cases to handle:
             //   (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
@@ -182,13 +182,17 @@ function genApprove() {
             // Or go to another URL:  actions.redirect('thank_you.html');
             toastSuccess(`הזמנה נוספה למערכת!`, toast)
 
-            const { orderId } = orderData;
+            const { orderID } = orderData;
 
             resetCart(); //reset cart
-            navigate("/"); //TODO: navigate to order finished page
+            OpenCart(false);
+            queryClient.invalidateQueries([`getOrders`])
+            if (orderID)
+                setTimeout(() => {
+                    window.location = `/order/${orderID}`;
+                }, 2000)
         } catch (e) {
             toastError(e, toast);
-            console.error(e);
         }
     }
 

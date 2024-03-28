@@ -20,11 +20,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <AuthProvider>
       <RealTimeData>
         <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT, "currency": "ILS" }}>
-          <CartProvider>
-            <QueryClientProvider client={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            <CartProvider>
               <App />
-            </QueryClientProvider>
-          </CartProvider>
+            </CartProvider>
+          </QueryClientProvider>
         </PayPalScriptProvider>
       </RealTimeData>
     </AuthProvider>

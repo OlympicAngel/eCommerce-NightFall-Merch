@@ -1,19 +1,15 @@
-import { MdCategory } from "react-icons/md";
+import { FaUserCircle } from "react-icons/fa";
 import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
 import { AiOutlineUser } from "react-icons/ai";
-import { FaUserCircle } from "react-icons/fa";
 import { IoMdLogIn } from "react-icons/io";
-import { FiLogIn, FiLogOut } from "react-icons/fi";
 import { IoMdLogOut } from "react-icons/io";
 import { MdContactSupport } from "react-icons/md";
 import { HiInformationCircle } from "react-icons/hi";
-import { MdSell } from "react-icons/md";
-import { GiSolarTime } from "react-icons/gi";
 import { BsFillSunFill } from "react-icons/bs";
 import { BsFillMoonStarsFill } from "react-icons/bs";
 import { CgMenu } from "react-icons/cg";
 import { AiFillHome } from "react-icons/ai";
-import { Flex, Link, Box, Button, Text, HStack, useColorMode, Spacer, Tooltip, Divider } from "@chakra-ui/react";
+import { Flex, Link, Box, Button, Text, HStack, useColorMode, Spacer, Tooltip } from "@chakra-ui/react";
 
 if (!localStorage["chakra-ui-color-mode"])
     localStorage["chakra-ui-color-mode"] = "dark"
@@ -71,8 +67,9 @@ export default function Nav() {
 
                 <MenuItem to="/" icon={<AiFillHome size={"1.2em"} />} {...{ closeMenu }}> ראשי</MenuItem>
                 <MenuItem to="/random" reloadDocument icon={<GiPerspectiveDiceSixFacesRandom size={"1.5em"} />} {...{ closeMenu }}>מוצר אקראי</MenuItem>
-                <MenuItem to="/contact" icon={<MdContactSupport size={"1.2em"} />} {...{ closeMenu }}> צור קשר</MenuItem>
-                <MenuItem to="/about" icon={<HiInformationCircle size={"1.2em"} />} {...{ closeMenu }}> עליינו</MenuItem>
+                <MenuItem to="/about" icon={<HiInformationCircle size={"1.2em"} />} {...{ closeMenu }}> עלינו</MenuItem>
+                {isAuth && <MenuItem to="/profile" icon={<FaUserCircle size={"1.2em"} />} {...{ closeMenu }}> פרופיל</MenuItem>}
+
 
                 <Spacer display={["none", "block"]} minH={"1em"} />
                 <SideButtons toggleMenu={toggleMenu} />

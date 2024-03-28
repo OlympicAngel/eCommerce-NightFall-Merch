@@ -3,6 +3,7 @@ import { Box, Flex, Table, Tbody, Td, Tr, useBreakpointValue } from "@chakra-ui/
 function DynTable(props) {
     const isMobile = useBreakpointValue({ base: true, md: false })
     const innerChilds = props.children.filter(c => !c?.trim);
+    console.log(innerChilds)
 
     if (isMobile)
         return <Box  {...props} children={undefined}>
