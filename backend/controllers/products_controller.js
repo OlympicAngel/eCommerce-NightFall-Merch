@@ -140,7 +140,9 @@ module.exports = {
     try {
       //find category
       const name = req.params.category
-      const products = await ProductModel.find().populate({ path: "category", match: { name } }).exec();
+      if (!name)
+        throw new Error("לא התקבלה קטגוריה")
+      const products = await ProductModel.find({ category: name }).populate({ path: "category" }).exec();
 
       return res.status(200).json({
         success: true,

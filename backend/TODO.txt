@@ -1,6 +1,4 @@
 TODO: admin index page with realtime data & some statistics
-TODO: categories page
-TODO: categories display products
 TODO: change DB to atlas & create data 
 TODO: add nightfall stats to about page
 TODO: new products (show latest 3)

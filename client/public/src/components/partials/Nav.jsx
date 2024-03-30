@@ -1,3 +1,4 @@
+import { MdCategory } from "react-icons/md";
 import { FaUserCircle } from "react-icons/fa";
 import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
 import { AiOutlineUser } from "react-icons/ai";
@@ -66,6 +67,7 @@ export default function Nav() {
             >
 
                 <MenuItem to="/" icon={<AiFillHome size={"1.2em"} />} {...{ closeMenu }}> ראשי</MenuItem>
+                <MenuItem to="/categories" icon={<MdCategory size={"1.3em"} />} {...{ closeMenu }}> קטגוריות</MenuItem>
                 <MenuItem to="/random" reloadDocument icon={<GiPerspectiveDiceSixFacesRandom size={"1.5em"} />} {...{ closeMenu }}>מוצר אקראי</MenuItem>
                 <MenuItem to="/about" icon={<HiInformationCircle size={"1.2em"} />} {...{ closeMenu }}> עלינו</MenuItem>
                 {isAuth && <MenuItem to="/profile" icon={<FaUserCircle size={"1.2em"} />} {...{ closeMenu }}> פרופיל</MenuItem>}

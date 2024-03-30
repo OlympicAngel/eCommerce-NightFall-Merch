@@ -1,9 +1,18 @@
 const Category = require("../models/Category");
+const Product = require("../models/Product");
 
 module.exports = {
   getAll: async (req, res) => {
     try {
-      const categories = await Category.find().exec();
+      const categories = await Category.find().lean().exec();
+
+      await Promise.all(categories.map(async (c, i) => {
+        try {
+          // Find a product with the same category
+          const p = await Product.findOne({ category: c._id, image: { $exists: true } });
+          c.image = p.image;
+        } catch (e) { }
+      }));
 
       return res.status(200).json({
         success: true,

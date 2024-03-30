@@ -1,3 +1,4 @@
+import { MdOutlineCategory } from "react-icons/md";
 import { BiDice3 } from "react-icons/bi";
 import { BiInfoCircle } from "react-icons/bi";
 import { FiHelpCircle } from "react-icons/fi";
@@ -30,6 +31,7 @@ function Footer() {
 
                 <FooterSection title="ניווט באתר">
                     <FooterLink to={"/"} text={"מוצרים"} icon={<BiListUl />} />
+                    <FooterLink to={"/categories"} text={"מוצרים"} icon={<MdOutlineCategory />} />
                     <FooterLink to={"/random"} text={"מוצר אקראי"} icon={<BiDice3 />} />
                     <FooterLink to={"/about"} text={"עלינו"} icon={<BiInfoCircle />} />
                 </FooterSection>
