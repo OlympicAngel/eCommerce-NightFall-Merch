@@ -4,9 +4,13 @@ import useQueryLogic from "../../hooks/useQueryLogic"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import ProductCard from "../../components/Product/ProductCard"
 import { toastError } from "../../utils/toast.helper"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import useTitle from "../../hooks/useTitle"
 
 function Categories() {
+    const [title, setTitle] = useState("קטגוריות")
+    useTitle(title)
+
     const { data: categories = new Array(5).fill(false), isLoading, error } = useQueryLogic({
         "key": "categories",
         "urlPath": "categories"
@@ -22,7 +26,9 @@ function Categories() {
         if (categoryName && !categoryID && !isLoading) {
             navigate("/categories")
             toastError(new Error(`הקטגוריה "${categoryName}" - לא קיימת`), toast)
+            return;
         }
+        setTitle(categoryName)
     }, [categoryName])
 
 
@@ -77,8 +83,6 @@ function CategoryProducts({ categoryID }) {
         "urlPath": "products/c/" + categoryID,
         "select": (res) => res.data.products
     })
-
-    console.log(products)
 
     return <>
         <VStack>
