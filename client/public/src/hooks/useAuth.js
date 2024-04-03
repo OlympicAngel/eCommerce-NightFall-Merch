@@ -25,7 +25,6 @@ function useAuth() {
             setIsLoading(false)
         },
         onError: (e) => {
-            setIsAuth(false)
             if (e.response.data.timeout)
                 toastError(e, toast)
             setIsLoading(false)

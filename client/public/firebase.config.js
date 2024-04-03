@@ -1,6 +1,10 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
+import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
+
+
 // Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -19,4 +23,20 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+signInAnonymously(auth)
+let cachedUser;
+export const getFirebaseUser = async () => {
+    if (!cachedUser)
+        cachedUser = (await signInAnonymously(auth)).user
+    return cachedUser;
+}
+// Create a ReCaptchaEnterpriseProvider instance using your reCAPTCHA Enterprise
+// site key and pass it to initializeAppCheck().
+export const appCheck = initializeAppCheck(app, {
+    provider: new ReCaptchaEnterpriseProvider(import.meta.env.VITE_RE_CAPTCHA_KEY),
+    isTokenAutoRefreshEnabled: true
+});
+
 export const rtDB = getDatabase(app)

@@ -18,15 +18,15 @@ const queryClient = new QueryClient()
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ChakraProvider theme={theme}>
     <AuthProvider>
-      <RealTimeData>
-        <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT, "currency": "ILS" }}>
-          <QueryClientProvider client={queryClient}>
-            <CartProvider>
+      <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT, "currency": "ILS" }}>
+        <QueryClientProvider client={queryClient}>
+          <CartProvider>
+            <RealTimeData>
               <App />
-            </CartProvider>
-          </QueryClientProvider>
-        </PayPalScriptProvider>
-      </RealTimeData>
+            </RealTimeData>
+          </CartProvider>
+        </QueryClientProvider>
+      </PayPalScriptProvider>
     </AuthProvider>
   </ChakraProvider>
 );

@@ -75,6 +75,7 @@ module.exports = {
         message: "התחברת בהצלחה!",
         token,
         user: {
+          _id: user._id,
           name: user.name,
           email: user.email,
           phone: user.phone,
@@ -160,6 +161,7 @@ module.exports = {
         message: "משתמש אומת",
         token: new_token,
         user: {
+          _id: user._id,
           name: user.name,
           email: user.email,
           phone: user.phone,

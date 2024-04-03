@@ -4,7 +4,6 @@ import {
 import { lazy, useContext } from "react";
 import Root from "./pages/public/Root";
 import { AuthContext } from "./context/AuthProvider";
-import useAuth from "./hooks/useAuth";
 
 const About = lazy(() => import('./pages/public/About'))
 const Login = lazy(() => import('./pages/public/Login'))
