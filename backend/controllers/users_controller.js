@@ -44,8 +44,11 @@ module.exports = {
       const { email, password } = req.body;
 
       const user = await UserModel.findOne({ email });
-      if (!user)
+      if (!user) {
+        //add random timeout to prevent hackers for tracking if email is correct by measuring response time
+        await sleep(2000 + 5 * Math.random())
         throw new Error("אמייל או סיסמה לא תקינים");
+      }
 
       const equal = await bcrypt.compare(password, user.password);
       if (!equal)
@@ -298,3 +301,5 @@ module.exports = {
     },
   }
 };
+
+const sleep = (ms) => new Promise(res => setTimeout(res, ms))

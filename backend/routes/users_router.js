@@ -15,7 +15,7 @@ router.post('/managers/login', limiter, managers.login);
 router.get('/managers/logout', auth_manager, managers.logout);
 router.get('/managers/auth', auth_manager, managers.authManagerToken);
 router.post("/managers/resetpassword", limiter, managers.reqResetPassword)
-router.post("/managers/resetpassword/verify", managers.useResetPin)
+router.post("/managers/resetpassword/verify", limiter, managers.useResetPin)
 //managers actions - control users
 router.get('/manage', auth_manager, users.manage.getAll);
 router.get('/manage/:id', auth_manager, users.manage.getById);
@@ -37,7 +37,7 @@ router.post('/login', limiter, users.login);
 router.get('/logout', auth_user, users.logout);
 router.get('/auth', users.authUserToken);
 router.post("/resetpassword", limiter, users.reqResetPassword)
-router.post("/resetpassword/verify", users.useResetPin)
+router.post("/resetpassword/verify", limiter, users.useResetPin)
 //users actions
 router.delete('/', auth_user, users.delete);
 router.put('/', auth_user, users.update);
