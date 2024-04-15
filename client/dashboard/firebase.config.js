@@ -1,8 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
-import { getAuth, signInAnonymously } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
+import { getDatabase } from "firebase/database";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 
 // Add SDKs for Firebase products that you want to use
@@ -25,13 +25,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const analytics = getAnalytics(app);
 
+//login to admin account on firebase - admin account can read/write realtime DB
 const auth = getAuth(app);
-signInAnonymously(auth)
 let cachedUser;
 export const getFirebaseUser = async () => {
     if (!cachedUser)
-        cachedUser = (await signInAnonymously(auth)).user
+        cachedUser = (await signInWithEmailAndPassword(auth,
+            import.meta.env.VITE_FIREBASE_ADMIN_USER,
+            import.meta.env.VITE_FIREBASE_ADMIN_PASS)).user
     return cachedUser;
 }
+getFirebaseUser();
 
 export const rtDB = getDatabase(app)

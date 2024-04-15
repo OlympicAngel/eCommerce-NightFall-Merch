@@ -7,7 +7,7 @@ import { useEffect } from "react"
  */
 function useTitle(title, updater_arg = undefined) {
     useEffect(() => {
-        document.title = `${title} | ניהול נייטפול מרצ'`
+        document.title = `${title} | נייטפול מרצ'`
     }, [title, updater_arg])
 }
 export default useTitle

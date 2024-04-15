@@ -12,7 +12,7 @@ import { Box, Container } from "@chakra-ui/react";
 import { AuthContext } from "./context/AuthProvider";
 import useAuth from "./hooks/useAuth";
 import Loader from "./components/partial/Loader";
-import Index from "./pages";
+import Index from "./pages/Index";
 //components
 const Nav = lazy(() => import("./components/partial/Nav"));
 const LoggedAdminFooter = lazy(() => import("./components/partial/LoggedAdminFooter"));

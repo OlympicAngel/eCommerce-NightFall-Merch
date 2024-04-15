@@ -1,9 +1,7 @@
 import { createContext, useState } from 'react';
 
 export const AuthContext = createContext();
-console.log(import.meta.env.VITE_SERVER)
 function AuthProvider({ children }) {
-
     const [isAuth, setIsAuth] = useState(false)
     const [manager, setManager] = useState(false)
     const SERVER = (import.meta.env.VITE_SERVER) || "http://localhost:4000/"

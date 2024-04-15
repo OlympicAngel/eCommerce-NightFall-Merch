@@ -28,7 +28,8 @@ function Categories() {
             toastError(new Error(`הקטגוריה "${categoryName}" - לא קיימת`), toast)
             return;
         }
-        setTitle(categoryName)
+        if (categoryName)
+            setTitle(categoryName)
     }, [categoryName])
 
 
