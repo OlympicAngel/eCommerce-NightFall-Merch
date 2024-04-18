@@ -4,17 +4,26 @@ import { ref, get, onValue, remove } from "firebase/database";
 
 function useFirebaseDB() {
     const usersRef = ref(rtDB, 'users');
-    const [data, setData] = useState({})
+    const [data, setData] = useState(undefined)
 
     function updateData(rawData) {
-        if (!rawData)
-            return;
+
         const newData = {
-            totalCartsWorth: Object.values(rawData).reduce((preVal, user) => preVal + user?.cart?.worth || 0, 0),
-            totalCartsItems: Object.values(rawData).reduce((preVal, user) => preVal + user?.cart?.itemCount || 0, 0),
-            activeUsers: Object.keys(rawData).length,
+            totalCartsWorth: rawData && Object.values(rawData).reduce((preVal, user) => preVal + user?.cart?.worth || 0, 0),
+            totalCartsItems: rawData && Object.values(rawData).reduce((preVal, user) => preVal + user?.cart?.itemCount || 0, 0),
+            activeUsers: rawData && Object.keys(rawData).length || 1,
             activePages: {}
         }
+        if (!rawData)
+            return setData(pre => (pre || {
+                totalCartsWorth: [{ y: 0, x: new Date() }],
+                totalCartsItems: [{ y: 0, x: new Date() }],
+                activeUsers: [{ y: 0, x: new Date() }],
+                activePages: {}
+            }));
+
+
+
         for (let userID in rawData) {
             const user = rawData[userID];
 
@@ -24,7 +33,6 @@ function useFirebaseDB() {
                 remove(userRef);
             }
 
-
             if (user.looking == undefined)
                 continue;
             const page = user.looking || "לא בפוקוס על האתר";
@@ -33,6 +41,7 @@ function useFirebaseDB() {
             else
                 newData.activePages[page]++;
         }
+
 
         setData(prevData => {
             const copy = Object.assign({}, prevData)
@@ -44,11 +53,11 @@ function useFirebaseDB() {
                 }
 
                 //if the values are different
-                if (prevData[key]?.[0]?.y != newData[key]) {
+                if (copy[key]?.[0]?.y != newData[key]) {
                     if (copy[key] == undefined)
-                        copy[key] = [{ y: newData[key], x: new Date(Date.now() - 1) }, { y: newData[key], x: new Date() }]//set initial value  
+                        copy[key] = [{ y: newData[key], x: new Date() }, { y: 0, x: new Date(Date.now() - 1000 * 60) }]//set initial value  
                     else
-                        copy[key] = [{ y: newData[key], x: new Date() }, ...prevData[key]]//add item
+                        copy[key] = [{ y: newData[key], x: new Date() }, ...copy[key]]//add item
                 }
             }
             return copy;
@@ -67,6 +76,6 @@ function useFirebaseDB() {
         }
     }, [])
 
-    return data;
+    return data || {};
 }
 export default useFirebaseDB
