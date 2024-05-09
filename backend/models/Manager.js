@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt')
 
-const Schema = mongoose.Schema;
-const schema = new Schema({
+const Manager = new Schema({
     name: {
         type: String,
         required: [true, "חובה לציין שם"],
-        unique: true,
         minlength: [2, "שם חייב להיות לפחות 2 תווים"],
     },
     email: {
@@ -27,13 +26,13 @@ const schema = new Schema({
     }
 })
 
-schema.pre('save', async function (next) {
+Manager.pre('save', async function (next) {
     // only hash the password if it has been modified (or is new)
     if (!this.isModified('password')) return next();
     this.password = await hash(this.password)
     next();
 })
-schema.pre('findOneAndUpdate', async function (next) {
+Manager.pre('findOneAndUpdate', async function (next) {
     if (!this._update.password) return next();
     this._update.password = await hash(this._update.password)
     next();
@@ -42,4 +41,5 @@ async function hash(pass) {
     return await bcrypt.hash(pass, 15);
 }
 
-module.exports = mongoose.model('managers', schema)
+/**@type {mongoose.Model<Manager>} */
+module.exports = mongoose.model('managers', Manager);

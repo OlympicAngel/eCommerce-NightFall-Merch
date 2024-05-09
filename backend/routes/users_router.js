@@ -26,6 +26,8 @@ router.put('/managers/', auth_manager, managers.updateSelf)
 
 //admins actions - control managers
 router.post('/managers/', auth_admin, managers.addManagerForAdmins);
+router.post('/managers/initialize', managers.isMangersNotInitializedYet, managers.addManagerForAdmins); //allow creating manager if non exists
+router.get('/managers/initialize/check', managers.isMangersNotInitializedYet, (req, res) => { res.json({ success: true, message: "לא קיים עדיין מנהל, צור את המנהל הראשי" }) }); //allow creating manager if non exists
 router.put('/managers/:id', auth_admin, managers.updateById)
 router.delete('/managers/:id', auth_admin, managers.deleteById);
 //admins actions - control users

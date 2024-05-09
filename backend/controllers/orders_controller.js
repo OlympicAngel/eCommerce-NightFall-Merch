@@ -94,13 +94,14 @@ module.exports = {
             try {
                 let { page = 1, limit = 20 } = req.query;
                 limit = Math.min(limit, 50) //limit to up to 50 per request
+                const count = await (OrderModel.count && OrderModel.count()) || 0;
                 //get product count
-                const count = await OrderModel.count();
                 const pages = Math.ceil(count / limit);
 
                 const orders = await OrderModel.find()
                     .skip((page - 1) * limit).limit(limit)
                     .populate(['user', 'products.product']).exec();
+
 
                 return res.status(200).json({
                     success: true,
@@ -111,6 +112,7 @@ module.exports = {
                     orders
                 })
             } catch (error) {
+                console.log(OrderModel.count)
                 return res.status(500).json({
                     message: `לא היה ניתן לשלוף את כל ההזמנות`,
                     error: error.message

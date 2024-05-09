@@ -8,13 +8,13 @@ import { AiFillCloseCircle, AiFillPlusCircle, AiOutlineEdit } from "react-icons/
 import { emailValidation, passwordValidation, passwordValidationOption } from "../../utils/yup.helper";
 import useMutationLogic from "../../hooks/useMutationLogic";
 
-function ManagerForm({ manager, onClose }) {
+function ManagerForm({ manager, onClose, alternateUrl }) {
     const loggedManager = useContext(AuthContext).manager
     const isUpdatingSelf = manager && loggedManager._id != manager._id;
     const method = manager ? "put" : "post";
 
     const managerCRUD = useMutationLogic({
-        "urlPath": `users/managers/${isUpdatingSelf ? manager._id : ""}`,
+        "urlPath": alternateUrl || `users/managers/${isUpdatingSelf ? manager._id : ""}`,
         "relatedQuery": "managers",
         onSuccess: () => { onClose() },
         method

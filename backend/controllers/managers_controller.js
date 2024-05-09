@@ -1,4 +1,5 @@
-let MangerModel = require(`../models/Manager`);
+const MangerModel = require(`../models/Manager`);
+
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -7,8 +8,33 @@ const { requestResetPassword, useResetPin } = require("../utils/otpFlow")
 
 const managerTokenDuration = 1000 * 60 * 60 * 2; //2H
 
+let isManagersInitialized = false;
 
 module.exports = {
+
+  //checks if managers didnt initialed yet - if no - allow registering new admin
+  isMangersNotInitializedYet: async (req, res, next) => {
+    function Block() {
+      res.status(403).json({
+        message: `פעולה חסומה`,
+        error: "אין גישה לפעולה זו",
+      });
+    }
+
+    //if already initialized - exit
+    if (isManagersInitialized)
+      return Block();
+
+    const aManager = await MangerModel.findOne({})
+    //if no manager - allow creating new one
+    if (!aManager) {
+      req.setAdmin = true;
+      return next();
+    }
+
+    isManagersInitialized = true; //update status
+    return Block(); // prevent action
+  },
 
   // functions for admins
   addManagerForAdmins: async (req, res) => {
@@ -25,6 +51,11 @@ module.exports = {
         phone: phone || "",
         address: address || "",
       });
+
+      if (req.setAdmin) {
+        new_manager.permission = 2;
+        isManagersInitialized = true; //update status
+      }
 
       // actual saving
       await new_manager.save();

@@ -14,12 +14,13 @@ function setRunValidators() {
 }
 
 const connection = async () => {
-    let url = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/master";
+    let url = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/nightfall-shop";
     try {
         await mongoose.connect(url, {
-            useUnifiedTopology: true,
-            useNewUrlParser: true,
-            /* useCreateIndex: true, */
+            auth: {
+                username: process.env.MONGO_USER,
+                password: process.env.MONGO_PASS
+            },
             autoIndex: true,
         });
         console.log("mongoose connected to DB");
