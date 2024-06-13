@@ -59,8 +59,8 @@ async function fillOrderWithProduct(cart) {
         //remove all items that might be user malformed OR not exist anymore (in case of really old cart?)
         const filteredCart = serverMap.filter(item => item.ref != undefined && !isNaN(item.quantity))
 
-        let isCartError = filteredCart.length != cart.length
-        return { filteredCart, }
+        let isCartError = filteredCart.length == 0;
+        return { filteredCart, isCartError }
     }
     catch (e) {
         return { isCartError: true }

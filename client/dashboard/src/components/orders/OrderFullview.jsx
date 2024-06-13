@@ -120,7 +120,7 @@ function OrderFullview({ order, handleClose }) {
                                 <Td p="0 !important">{payment.paypal_id}</Td>
                                 <Td >
                                     <Badge colorScheme="red" variant={"solid"} h="1.2em" w={"100%"} fontSize={"1.2em"} textAlign={"center"}>
-                                        <strong>₪{payment.paypal_fee.toLocaleString()}-</strong>
+                                        <strong>₪{payment.paypal_fee?.toLocaleString()}-</strong>
                                     </Badge>
                                 </Td>
                             </Tr>

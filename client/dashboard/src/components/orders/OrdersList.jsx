@@ -29,8 +29,13 @@ function OrdersList({ orders = [], isLoading }) {
     }
 
     //convert date to Date object for later sorting & COPY order list so we can modify it
-    let filteredOrders = orders.map(o => { o.created_at_parsed = new Date(o.created_at)?.toLocaleString("he-il", { "dateStyle": "short" }); return o; });
-
+    let filteredOrders = orders
+        .map(o => {
+            o.created_at_parsed = new Date(o.created_at)?.toLocaleString("he-il", { "dateStyle": "short" });
+            if (!o.customer)
+                o.customer = { address: {} };
+            return o;
+        });
     //filter by type
     const filters = genFilterOptions()//gen filter option list
     const filterLogic = FilterBtn.useFilterBtnLogic(filters) //use hook with <FilterButtons> comp
