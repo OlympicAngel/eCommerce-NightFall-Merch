@@ -63,9 +63,15 @@ function RelatedProduct({ product, isLoading }) {
 
 
     return <Flex flexDir={"column"} position={"relative"} alignItems={"stretch"} {...containerStyle}>
-        <Image borderRadius="md" flex="1" objectFit='cover' maxH={["auto", "auto", "80%"]} src={product?.image} alt={product?.name}
-            fallbackSrc='/images/noImage.jpg'>
-        </Image>
+        <Box borderRadius="md" flex="1" maxH={["auto", "auto", "80%"]} overflow={"hidden"} position={"relative"}>
+            <Image src={product?.image} objectFit='cover' h={"100%"} w={"100%"} alt={product?.name}
+                fallbackSrc='/images/noImage.jpg'>
+            </Image>
+            <Text bg={"rgba(0,0,0,0.5)"} w="100%" position={"absolute"} bottom={0} fontWeight={700}
+                whiteSpace={"nowrap"} textOverflow={"ellipsis"} overflow={"hidden"}
+                backdropFilter={"blur(0.2em)"}>{product.name}</Text>
+        </Box>
+
         <Tooltip label="עוד פרטים על המוצר">
             <Button m={0} as={Link} to={`../product/${product._id}/${product.name}`} alt={"עוד מידע על " + product?.name} colorScheme="blue" p={0} borderRadius={"100%"}
                 position={"absolute"} inset={"2% 2% 0 0"} fontSize={"clamp(1em,4.5vmin,2em)"} width="clamp(1.2em,4.5vmin,1.4em)" h={"auto"} aspectRatio={1}>
@@ -76,7 +82,7 @@ function RelatedProduct({ product, isLoading }) {
             <CircularProgress value={similarValue} max={1} position={"absolute"} left="1%" top="1%"
                 size={"1.2em"} thickness={"2.3em"} color="high.purple" trackColor="purple.900" />
         </Tooltip>
-        <Text opacity="0.7" flex="0">{product.name}</Text>
+
         <Text>₪{product?.price?.toLocaleString()}{product?.price % 1 == 0 && ".00"}</Text>
         <Flex mt={"0.5em"} gap={"0.2em"}>
             {

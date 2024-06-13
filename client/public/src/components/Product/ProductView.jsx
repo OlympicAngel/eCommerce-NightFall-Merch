@@ -62,7 +62,7 @@ function ProductInfo({ product }) {
             </Skeleton>
         </HStack>
         <SkeletonText isLoaded={product._id}>
-            <Text fontSize={["lg"]} m={["auto", "0"]} ms={["auto", "1em"]} maxW={"max(40vw,80%,300px)"} textAlign={"justify"}>
+            <Text fontSize={["lg"]} m={["auto", "0"]} ms={["auto", "1em"]} maxW={"max(40vw,80%,300px)"} textAlign={"justify"} whiteSpace={"break-spaces"}>
                 {product.description || !product._id && lorem || "- אין תיאור למוצר זה -"}
             </Text>
         </SkeletonText>
