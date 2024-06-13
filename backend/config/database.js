@@ -14,7 +14,7 @@ function setRunValidators() {
 }
 
 const connection = async () => {
-    let url = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/nightfall-shop";
+    let url = process.env.MONGO_URI || "mongodb://127.0.0.1:27017";
     try {
         await mongoose.connect(url, {
             auth: {
@@ -22,8 +22,9 @@ const connection = async () => {
                 password: process.env.MONGO_PASS
             },
             autoIndex: true,
+            "dbName": "nightfall-shop"
         });
-        console.log("mongoose connected to DB");
+        console.log("mongoose connected to DB at - " + process.env.MONGO_URI.split(".")[0]);
     } catch (error) {
         console.log(error);
     }
